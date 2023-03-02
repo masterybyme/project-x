@@ -1,0 +1,98 @@
+{% extends 'user_frame.html' %}
+
+{% block content %}
+
+<link href = "{{ url_for('static', filename='style.css') }}" rel = "stylesheet">
+
+<!DOCTYPE html>
+<html>
+     <head>
+        <meta charset="UTF-8">
+        <title>Admin</title>
+    </head>
+    <body>
+
+     {% for message in get_flashed_messages() %}
+        {{ message }}
+     {% endfor %}
+
+     <h1>Welcome</h1>
+
+     <p>
+
+     </p>
+    <p></p>
+    <form action= '/admin' method = 'POST' class='TimeReqForm'>
+        {{ template_form.hidden_tag() }}
+        <p>
+            {{ template_form.weeks() }}
+        </p>
+        <TABLE>
+            <thead>
+                <TR>
+                    <TH WIDTH='200'>Date</TH>
+                    {% for i in range(24) %}
+                        <TH WIDTH='50'>{{ i }}:00</TH>
+                    {% endfor %}
+                </TR>
+            </thead>
+            <TBODY>
+                {% for i in range(day_num) %}
+                <TR>
+                    <TD>
+                        {% set nextday = monday + timedelta(days=i) %}
+                        {{ nextday.strftime('%d.%m.%Y') }}
+                    </TD>
+                    {% for hour in range(24) %}
+                    <TD>
+                        <input type='number' name='worker_{{ i }}_{{ hour }}' style='width: 40px'>
+                    </TD>
+                    {% endfor %}
+                </TR>
+                {% endfor %}
+            </TBODY>
+
+        </TABLE>
+
+        <p>
+            {{ template_form.submit() }}
+        </p>
+
+        <p></p>
+        <p></p>
+        <p>
+            {{ template_form.date() }} {{ template_form.remove() }}
+        </p>
+
+    </form>
+    <TABLE>
+        <THEAD>
+            <TR>
+                <TH WIDTH="100">
+                    Date
+                </TH>
+                <TH WIDTH="100">
+                    Hour
+                </TH>
+                <TH WIDTH="100">
+                    No. of FTE
+                </TH>
+            </TR>
+        </THEAD>
+        <TBODY>
+            {% for i in Time %}
+            <TR>
+                <TD WIDTH="100" ALIGN="CENTER">{{ i.date }}</TD>
+                <TD WIDTH="100" ALIGN="CENTER">{{ i.start_time }}</TD>
+                <TD WIDTH="100" ALIGN="CENTER">{{ i.worker }}</TD>
+            </TR>
+            {% endfor %}
+        </TBODY>
+    </TABLE>
+
+
+    </body>
+
+</html>
+
+{% endblock content %}

@@ -1,0 +1,58 @@
+{% extends 'user_frame.html' %}
+
+{% block content %}
+
+
+<html>
+     <head>
+        <meta charset="UTF-8">
+        <title>Opening Hours</title>
+    </head>
+    <body>
+     {% for message in get_flashed_messages() %}
+        {{ message }}
+     {% endfor %}
+        <h1>Time Table</h1>
+
+        <strong>Below you'll find the current opening hours.
+        For Updating just change the times.</strong>
+     <p></p>
+
+        <form action= '/opening' method = 'POST' class='UpdateForm'>
+            {{ template_form.hidden_tag() }}
+
+            <TABLE>
+            <thead>
+                <TR>
+                    <TH WIDTH='100' ALIGN="LEFT">Weekday</TH>
+                    <TH WIDTH='90' ALIGN="CENTER">Start Time</TH>
+                    <TH WIDTH='90' ALIGN="CENTER">End Time</TH>
+                </TR>
+            </thead>
+            <TBODY>
+                {% for i in range(day_num) %}
+                <TR>
+                    <TD>
+                        {{ weekdays[i] }}
+                    </TD>
+                    {% for vari in range(2) %}
+                    <TD ALIGN="CENTER">
+                        <input type='time' name='day_{{ i }}_{{ vari }}' style='width: 70px'>
+                    </TD>
+                    {% endfor %}
+                </TR>
+                {% endfor %}
+            </TBODY>
+
+        </TABLE>
+            <p>{{ template_form.update() }}</p>
+
+            <p></p>
+            <p></p>
+            <p></p>
+        </form>
+
+    </body>
+
+</html>
+{% endblock content %}

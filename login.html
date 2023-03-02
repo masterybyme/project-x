@@ -1,0 +1,55 @@
+{% extends 'frame.html' %}
+
+{% block content %}
+
+<link rel = 'stylesheet' type = 'text/css' href = 'style.css'>
+
+<!DOCTYPE html>
+<html>
+     <head>
+        <meta charset="UTF-8">
+        <title>Test 2</title>
+    </head>
+
+    <body BGCOLOR="#CCCCCC">
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+        <h1>Login</h1>
+        <form action= '/login' method = 'POST' class='<EmployeeForm'>
+            {{ template_form.hidden_tag() }}
+             <TABLE>
+                <TR>
+                    <TD WIDTH="200">
+                        {{ template_form.email.label }}
+                    </TD>
+                    <TD WIDTH="200">
+                        {{ template_form.email() }}
+                    </TD>
+                </TR>
+                 <TR>
+                    <TD WIDTH="200">
+                        {{ template_form.password.label }}
+                    </TD>
+                    <TD WIDTH="200">
+                        {{ template_form.password() }}
+                    </TD>
+                </TR>
+             </TABLE>
+            <p>
+                {{ template_form.submit() }}
+            </p>
+            <p></p>
+            <a href = "/registration">Create A New Account</a>
+            <p></p>
+            <a href = "/">Home</a>
+            <p></p>
+            <p></p>
+        </form>
+
+    </body>
+
+</html>
+{% endblock content %}

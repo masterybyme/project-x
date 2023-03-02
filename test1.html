@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+     <head>
+        <meta charset="UTF-8">
+        <title>Test 1</title>
+    </head>
+    <body>
+        <h1>LOGIN</h1>
+        <form action= '/test1' method = 'POST' class='<EmployeeForm'>
+            {{ template_form.hidden_tag() }}
+            <p>
+                {{ template_form.first_name.label }}
+                {{ template_form.first_name() }}
+            </p>
+
+            <p>
+                {{ template_form.submit() }}
+            </p>
+            <p></p>
+            <a href = "/">Home</a>
+            <p></p>
+            <p></p>
+             <ul>
+                    {% for i in name_tag %}
+                    <li>{{ i }}</li>
+                    {% endfor %}
+                </ul>
+            <p></p>
+        </form>
+
+    </body>
+
+</html>

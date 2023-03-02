@@ -1,0 +1,74 @@
+{% extends 'user_frame.html' %}
+
+{% block content %}
+
+<html>
+     <head>
+        <meta charset="UTF-8">
+        <title>Dashboard</title>
+    </head>
+    <body>
+    {% for message in get_flashed_messages() %}
+
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
+    <h1>Dashboard</h1>
+
+    <h2>Opening Hours</h2>
+    <TABLE>
+        <THEAD>
+            <TH WIDTH="100" ALIGN="CENTER"><strong>Weekday</strong></TH>
+            <TH WIDTH="100" ALIGN="CENTER"><strong>Opening:</strong></TH>
+            <TH WIDTH="100" ALIGN="CENTER"><strong>Closing:</strong></TH>
+        </THEAD>
+        {% for i in open_tag %}
+        <TBODY>
+            <TR>
+                <TD WIDTH="50" ALIGN="CENTER">{{ i.weekday }}</TD>
+                <TD WIDTH="100" ALIGN="CENTER">{{ i.start_time }}</TD>
+                <TD WIDTH="100" ALIGN="CENTER">{{ i.end_time }}</TD>
+            </TR>
+        </TBODY>
+        {% endfor %}
+    </TABLE>
+    <p></p>
+
+    <h2>Employee Table</h2>
+    <TABLE>
+        <THEAD>
+            <TH WIDTH="50" ALIGN="CENTER"><strong>ID</strong></TH>
+            <TH WIDTH="100" ALIGN="CENTER"><strong>First Name</strong></TH>
+            <TH WIDTH="100" ALIGN="CENTER"><strong>Last Name</strong></TH>
+            <TH WIDTH="100" ALIGN="CENTER"><strong>Employment Level</strong></TH>
+            <TH WIDTH="100" ALIGN="CENTER"><strong>Company Name</strong></TH>
+            <TH WIDTH="100" ALIGN="CENTER"><strong>Department</strong></TH>
+            <TH WIDTH="100" ALIGN="CENTER"><strong>Access Level</strong></TH>
+            <TH WIDTH="150" ALIGN="CENTER"><strong>E-Mail</strong></TH>
+            <TH WIDTH="50" ALIGN="CENTER"><strong>Delete Button</strong></TH>
+        </THEAD>
+        {% for i in data_tag %}
+        <TBODY>
+            <TR>
+                <TD WIDTH="50" ALIGN="CENTER">{{ i.id }}</TD>
+                <TD WIDTH="100" ALIGN="CENTER">{{ i.first_name }}</TD>
+                <TD WIDTH="100" ALIGN="CENTER">{{ i.last_name }}</TD>
+                <TD WIDTH="100" ALIGN="CENTER">{{ i.employment_level }}</TD>
+                <TD WIDTH="100" ALIGN="CENTER">{{ i.company_name }}</TD>
+                <TD WIDTH="100" ALIGN="CENTER">{{ i.department }}</TD>
+                <TD WIDTH="100" ALIGN="CENTER">{{ i.access_level }}</TD>
+                <TD WIDTH="150" ALIGN="CENTER">{{ i.email }}</TD>
+                <TD WIDTH="50" ALIGN="CENTER"><a href="{{ url_for('delete', id=i.id) }}">Delete</a></TD>
+            </TR>
+        </TBODY>
+        {% endfor %}
+    </TABLE>
+
+
+    </body>
+
+</html>
+{% endblock content %}
