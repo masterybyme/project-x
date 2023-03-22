@@ -1,0 +1,1 @@
+pip install flask, flask_sqlalchemy, flask_login, flask_wtf, wtforms, wtforms.validators, datetime, flask_migrate, werkzeug.security,functools 
