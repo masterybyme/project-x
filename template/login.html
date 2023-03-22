@@ -1,0 +1,41 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href = "{{ url_for('static', filename='style-login.css') }}" rel = "stylesheet">
+</head>
+<body>
+    <div class="back-btn">
+        <a href="#" onclick="history.back(); return false;"><span></span>Zurück</a>
+      </div>      
+    <section>
+    <div class="color-login"></div>
+    <div class="color-login"></div>
+    <div class="color-login"></div>
+    <div class="box-login">
+        <div class="container-login">
+            <div class="form-login">
+                <h2>Login</h2>
+                <form method="POST">
+                    {{ template_form.csrf_token }}
+                    <div class="inputBox" >
+                      {{ template_form.email(placeholder="Email") }}
+                    </div>
+                    <div class="inputBox">
+                      {{ template_form.password(placeholder="Password") }}
+                    </div>
+                    <div class="inputBox">
+                      {{ template_form.submit() }}
+                    </div>
+                    <p class="forget">Password vergessen? <a href="#">Click Here</a></p>
+                    <p class="forget">Noch keinen Account? <a href="#">Registrieren</a> </p>
+                  </form>
+                  
+            </div>
+        </div>
+    </div>
+</section>    
+</body>
+</html>
