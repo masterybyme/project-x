@@ -12,6 +12,8 @@ from functools import wraps
 
 sdgngjkadshgkjasdlkfjlksadjnl
 
+Lucky Ass
+
 #Config
 #----------------------------------------------------------------------------------
 
