@@ -1,0 +1,106 @@
+{% extends 'frame.html' %}
+
+{% block content %}
+
+<html>
+     <head>
+        <meta charset="UTF-8">
+        <title>Registration</title>
+    </head>
+    <body>
+    {% for message in get_flashed_messages() %}
+
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+    <h1>REGISTRATION</h1>
+        <form action= '/registration' method = 'POST' class='<EmployeeForm'>
+            {{ template_form.hidden_tag() }}
+            <TABLE>
+                <TR>
+                    <TD WIDTH="150">
+                        {{ template_form.first_name.label }}
+                    </TD>
+                    <TD WIDTH="300">
+                        {{ template_form.first_name() }}
+                    </TD>
+                </TR>
+                <TR>
+                    <TD WIDTH="150">
+                        {{ template_form.last_name.label }}
+                    </TD>
+                    <TD WIDTH="300">
+                        {{ template_form.last_name() }}
+                    </TD>
+                </TR>
+                <TR>
+                    <TD WIDTH="150">
+                        {{ template_form.employment_level.label }}
+                    </TD>
+                    <TD WIDTH="300">
+                        {{ template_form.employment_level() }}
+                    </TD>
+                </TR>
+                <TR>
+                    <TD WIDTH="150">
+                        {{ template_form.company_name.label }}
+                    </TD>
+                    <TD WIDTH="300">
+                        {{ template_form.company_name() }}
+                    </TD>
+                </TR>
+                <TR>
+                    <TD WIDTH="150">
+                        {{ template_form.department.label }}
+                    </TD>
+                    <TD WIDTH="300">
+                        {{ template_form.department() }}
+                    </TD>
+                </TR>
+                <TR>
+                    <TD WIDTH="150">
+                        Access Level
+                    </TD>
+                    <TD WIDTH="300">
+                        {{ template_form.access_level() }}
+                    </TD>
+                </TR>
+                <TR>
+                    <TD WIDTH="150">
+                        {{ template_form.email.label }}
+                    </TD>
+                    <TD WIDTH="300">
+                        {{ template_form.email() }}
+                    </TD>
+                </TR>
+                <TR>
+                    <TD WIDTH="150">
+                        {{ template_form.password.label }}
+                    </TD>
+                    <TD WIDTH="300">
+                        {{ template_form.password() }}
+                    </TD>
+                </TR>
+                <TR>
+                    <TD WIDTH="150">
+                        {{ template_form.password2.label }}
+                    </TD>
+                    <TD WIDTH="300">
+                        {{ template_form.password2() }}
+                    </TD>
+                </TR>
+            </TABLE>
+            <p>
+                {{ template_form.submit() }}
+            </p>
+            <p></p>
+            <p></p>
+            <p></p>
+        </form>
+
+    </body>
+
+</html>
+{% endblock content %}

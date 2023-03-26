@@ -1,0 +1,67 @@
+{% extends 'user_frame.html' %}
+
+{% block content %}
+
+
+<html>
+     <head>
+        <meta charset="UTF-8">
+        <title>Planning</title>
+    </head>
+    <body>
+        {% for message in get_flashed_messages() %}
+        {{ message }}
+        {% endfor %}
+        <h1>Time Table</h1>
+
+         <p></p>
+        <p>
+            This week starts from: {{ monday }}
+        </p>
+
+
+        <form action= '/planning' method = 'POST' class='PlanningForm'>
+            {{ template_form.hidden_tag() }}
+            <input type='hidden' name='monday' value='{{ monday }}'>
+
+            <a> {{ template_form.prev_week }} | {{ template_form.next_week }} </a>
+            <p></p>
+             <a>{{ template_form.template1() }}  |  {{ template_form.template2() }}  |  {{ template_form.template3() }}</a>
+            <p></p>
+
+            <TABLE>
+            <thead>
+                <TR>
+                    <TH WIDTH='100' ALIGN="LEFT">Date</TH>
+                    <TH WIDTH='90' ALIGN="CENTER">Start Time</TH>
+                    <TH WIDTH='90' ALIGN="CENTER">End Time</TH>
+                </TR>
+            </thead>
+            <TBODY>
+                {% for i in range(day_num) %}
+                <TR>
+                    <TD>
+                        {{ weekdays[i] }}
+                    </TD>
+                    {% for vari in range(2) %}
+                    <TD ALIGN="CENTER">
+                        <input type='time' name='day_{{ i }}_{{ vari }}' value='{{ i }}+{{ vari }}' style='width: 70px'>
+                    </TD>
+                    {% endfor %}
+                </TR>
+                {% endfor %}
+            </TBODY>
+
+        </TABLE>
+            <p>{{ template_form.submit() }}</p>
+            <p>{{ template_form.template_name() }}{{ template_form.template() }}</p>
+
+            <p></p>
+            <p></p>
+            <p></p>
+        </form>
+
+    </body>
+
+</html>
+{% endblock content %}
