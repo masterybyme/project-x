@@ -123,6 +123,13 @@ class TimeReqForm(FlaskForm):
     worker = IntegerField('FTE')
     submit = SubmitField('Submit')
     remove = SubmitField('Remove')
+    template1 = SubmitField('Template1')
+    template2 = SubmitField('Template2')
+    template3 = SubmitField('Template 3')
+    template_name = StringField('Template Name')
+    template = SubmitField('Save Template')
+    prev_week = SubmitField('Previous Week')
+    next_week = SubmitField('Next Week')
 
 
 
@@ -140,8 +147,10 @@ class User(db.Model, UserMixin):
     company_name = db.Column(db.String(200), index=True, unique=False)
     department = db.Column(db.String(200), index=True, unique=False)
     access_level = db.Column(db.String(200), index=True, unique=False)
+    timestamp = db.Column(db.DateTime, default=datetime.now)
 
-    def __init__(self, id, first_name, last_name, email, password, employment_level, company_name, department, access_level):
+
+    def __init__(self, id, first_name, last_name, email, password, employment_level, company_name, department, access_level, timestamp):
         self.id = id
         self.first_name = first_name
         self.last_name = last_name
@@ -151,6 +160,7 @@ class User(db.Model, UserMixin):
         self.company_name = company_name
         self.department = department
         self.access_level = access_level
+        self.timestamp = timestamp
 
 
 class Availability(db.Model, UserMixin):
@@ -160,14 +170,24 @@ class Availability(db.Model, UserMixin):
     weekday = db.Column(db.String(200), index=True, unique=False)
     start_time = db.Column(db.Time)
     end_time = db.Column(db.Time)
+    start_time2 = db.Column(db.Time)
+    end_time2 = db.Column(db.Time)
+    start_time3 = db.Column(db.Time)
+    end_time3 = db.Column(db.Time)
+    timestamp = db.Column(db.DateTime, default=datetime.now)
 
-    def __init__(self, id, email, date, weekday, start_time, end_time):
+    def __init__(self, id, email, date, weekday, start_time, end_time, start_time2, end_time2, start_time3, end_time3, timestamp):
         self.id = id
         self.email = email
         self.date = date
         self.weekday = weekday
         self.start_time = start_time
         self.end_time = end_time
+        self.start_time2 = start_time2
+        self.end_time2 = end_time2
+        self.start_time3 = start_time3
+        self.end_time3 = end_time3
+        self.timestamp = timestamp
 
 
 class TimeReq(db.Model, UserMixin):
@@ -175,12 +195,14 @@ class TimeReq(db.Model, UserMixin):
     date = db.Column(db.Date, index=True)
     start_time = db.Column(db.Time)
     worker = db.Column(db.Integer)
+    timestamp = db.Column(db.DateTime, default=datetime.now)
 
-    def __init__(self, id, date, start_time, worker):
+    def __init__(self, id, date, start_time, worker, timestamp):
         self.id = id
         self.date = date
         self.start_time = start_time
         self.worker = worker
+        self.timestamp = timestamp
 
 
 class Company(db.Model, UserMixin):
@@ -188,12 +210,14 @@ class Company(db.Model, UserMixin):
     company_name = db.Column(db.String(200), index=True, unique=False)
     weekly_hours = db.Column(db.Integer)
     shifts = db.Column(db.Integer)
+    timestamp = db.Column(db.DateTime, default=datetime.now)
 
-    def __init__(self, id, company_name, weekly_hours, shifts):
+    def __init__(self, id, company_name, weekly_hours, shifts, timestamp):
         self.id = id
         self.company_name = company_name
         self.weekly_hours = weekly_hours
         self.shifts = shifts
+        self.timestamp = timestamp
 
 
 class OpeningHours(db.Model, UserMixin):
@@ -201,12 +225,14 @@ class OpeningHours(db.Model, UserMixin):
     weekday = db.Column(db.String(200), index=True, unique=False)
     start_time = db.Column(db.Time)
     end_time = db.Column(db.Time)
+    timestamp = db.Column(db.DateTime, default=datetime.now)
 
-    def __init__(self, id, weekday, start_time, end_time):
+    def __init__(self, id, weekday, start_time, end_time, timestamp):
         self.id = id
         self.weekday = weekday
         self.start_time = start_time
         self.end_time = end_time
+        self.timestamp = timestamp
 
 
 class Timetable(db.Model, UserMixin):
@@ -217,9 +243,14 @@ class Timetable(db.Model, UserMixin):
     date = db.Column(db.Date, index=True)
     start_time = db.Column(db.Time)
     end_time = db.Column(db.Time)
+    start_time2 = db.Column(db.Time)
+    end_time2 = db.Column(db.Time)
+    start_time3 = db.Column(db.Time)
+    end_time3 = db.Column(db.Time)
+    timestamp = db.Column(db.DateTime, default=datetime.now)
 
 
-    def __init__(self, id, email, first_name, last_name, date, start_time, end_time):
+    def __init__(self, id, email, first_name, last_name, date, start_time, end_time, start_time2, end_time2, start_time3, end_time3, timestamp):
         self.id = id
         self.email = email
         self.first_name = first_name
@@ -227,21 +258,30 @@ class Timetable(db.Model, UserMixin):
         self.date = date
         self.start_time = start_time
         self.end_time = end_time
+        self.start_time2 = start_time2
+        self.end_time2 = end_time2
+        self.start_time3 = start_time3
+        self.end_time3 = end_time3
+        self.timestamp = timestamp
 
 
 class TemplateTimeRequirement(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     template_name = db.Column(db.String(200), index=True, unique=False)
     date = db.Column(db.Date, index=True)
+    weekday = db.Column(db.String(200), index=True, unique=False)
     start_time = db.Column(db.Time)
     worker = db.Column(db.Integer)
+    timestamp = db.Column(db.DateTime, default=datetime.now)
 
-    def __init__(self, id, template_name, date, start_time, worker):
+    def __init__(self, id, template_name, date, weekday, start_time, worker, timestamp):
         self.id = id
         self.template_name = template_name
         self.date = date
+        self.weekday = weekday
         self.start_time = start_time
         self.worker = worker
+        self.timestamp = timestamp
 
 
 class TemplateAvailability(db.Model, UserMixin):
@@ -252,8 +292,13 @@ class TemplateAvailability(db.Model, UserMixin):
     weekday = db.Column(db.String(200), index=True, unique=False)
     start_time = db.Column(db.Time)
     end_time = db.Column(db.Time)
+    start_time2 = db.Column(db.Time)
+    end_time2 = db.Column(db.Time)
+    start_time3 = db.Column(db.Time)
+    end_time3 = db.Column(db.Time)
+    timestamp = db.Column(db.DateTime, default=datetime.now)
 
-    def __init__(self, id, template_name, email, date, weekday, start_time, end_time):
+    def __init__(self, id, template_name, email, date, weekday, start_time, end_time, start_time2, end_time2, start_time3, end_time3, timestamp):
         self.id = id
         self.template_name = template_name
         self.email = email
@@ -261,6 +306,11 @@ class TemplateAvailability(db.Model, UserMixin):
         self.weekday = weekday
         self.start_time = start_time
         self.end_time = end_time
+        self.start_time2 = start_time2
+        self.end_time2 = end_time2
+        self.start_time3 = start_time3
+        self.end_time3 = end_time3
+        self.timestamp = timestamp
 
 
 
@@ -406,41 +456,20 @@ def planning():
         return render_template('planning.html', template_form=planning_form, monday=monday, weekdays=weekdays,
                                day_num=day_num)
 
+    #Set Template
     if planning_form.template1.data:
         temp_dict = {}
-        temp = TemplateAvailability.query.filter_by(email=user.email, weekday='Monday').first()
-        day_0_0 = temp.start_time
-        day_0_1 = temp.end_time
-        day_1_0 = temp.end_time
-        day_1_1 = temp.end_time
-        day_2_0 = temp.end_time
-        day_2_1 = temp.end_time
-        day_3_0 = temp.end_time
-        day_3_1 = temp.end_time
-        day_4_0 = temp.end_time
-        day_4_1 = temp.end_time
-        day_5_0 = temp.end_time
-        day_5_1 = temp.end_time
-        day_6_0 = temp.end_time
-        day_6_1 = temp.end_time
+        for i in range(day_num):
+            temp = TemplateAvailability.query.filter_by(email=user.email, weekday=weekdays[i]).first()
+            if temp is None:
+                pass
+            else:
+                new_i = i + 1
+                temp_dict[str(new_i) + '&0'] = temp.start_time
+                temp_dict[str(new_i) + '&1'] = temp.end_time
 
         return render_template('planning.html', template_form=planning_form, monday=monday, weekdays=weekdays,
-                               day_num=day_num,
-                               day_0_0=day_0_0,
-                               day_0_1=day_0_1,
-                               day_1_0=day_1_0,
-                               day_1_1=day_1_1,
-                               day_2_0=day_2_0,
-                               day_2_1=day_2_1,
-                               day_3_0=day_3_0,
-                               day_3_1=day_3_1,
-                               day_4_0=day_4_0,
-                               day_4_1=day_4_1,
-                               day_5_0=day_5_0,
-                               day_5_1=day_5_1,
-                               day_6_0=day_6_0,
-                               day_6_1=day_6_1,
-                               )
+                               day_num=day_num, temp_dict=temp_dict)
 
 
     #Save Availability
@@ -455,8 +484,12 @@ def planning():
                 else:
                     new_id = last.id + 1
                 new_date = monday + datetime.timedelta(days=i) + datetime.timedelta(days=week_adjustment)
-                new_entry1 = datetime.datetime.strptime(entry1, '%H:%M').time()
-                new_entry2 = datetime.datetime.strptime(entry2, '%H:%M').time()
+                try:
+                    new_entry1 = datetime.datetime.strptime(entry1, '%H:%M:%S').time()
+                    new_entry2 = datetime.datetime.strptime(entry2, '%H:%M:%S').time()
+                except:
+                    new_entry1 = datetime.datetime.strptime(entry1, '%H:%M').time()
+                    new_entry2 = datetime.datetime.strptime(entry2, '%H:%M').time()
                 new_weekday = weekdays[i]
 
 
@@ -490,8 +523,10 @@ def planning():
                 db.session.add(data)
                 db.session.commit()
 
-    return render_template('planning.html', template_form=planning_form, monday=monday, weekdays=weekdays, day_num=day_num)
+    #Update Planning - Still not working
+    pass
 
+    return render_template('planning.html', template_form=planning_form, monday=monday, weekdays=weekdays, day_num=day_num)
 
 
 @app.route('/delete_availability/<int:id>')
@@ -525,9 +560,50 @@ def delete(id):
 def admin():
     time_form = TimeReqForm(csrf_enbled=False)
     Time = TimeReq.query.all()
+    weekdays = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday', 4: 'Friday', 5: 'Saturday', 6: 'Sunday'}
     today = datetime.date.today()
     monday = today - datetime.timedelta(days=today.weekday())
     day_num = 7
+    week_adjustment = session.get('week_adjustment', 0)
+    user = User.query.get(current_user.id)
+
+    #Prev Week
+    if time_form.prev_week.data:
+        week_adjustment -=7
+        session['week_adjustment'] = week_adjustment
+
+        monday = monday + datetime.timedelta(days=week_adjustment)
+
+        return render_template('admin.html', template_form=time_form, timedelta=timedelta, monday=monday, Time=Time, weekdays=weekdays,
+                               day_num=day_num)
+    
+    #Next Week
+    if time_form.next_week.data:
+        week_adjustment +=7
+        session['week_adjustment'] = week_adjustment
+
+        monday = monday + datetime.timedelta(days=week_adjustment)
+
+        return render_template('admin.html', template_form=time_form, timedelta=timedelta, monday=monday, Time=Time, weekdays=weekdays,
+                               day_num=day_num)
+
+    # Set Template
+    if time_form.template1.data:
+        temp_dict = {}
+        for i in range(day_num):
+            for hour in range(24):
+                time_num = hour * 100
+                time = f'{time_num:04d}'
+                new_time = datetime.datetime.strptime(time, '%H%M').time()
+                temp = TemplateTimeRequirement.query.filter_by(weekday=weekdays[i], start_time=new_time).first()
+                if temp is None:
+                    pass
+                else:
+                    new_i = i + 1
+                    temp_dict[str(new_i) + '&' + str(hour)] = temp.worker
+
+        return render_template('admin.html', template_form=time_form, timedelta=timedelta, monday=monday, weekdays=weekdays,
+                                day_num=day_num, temp_dict=temp_dict)
 
     #Submit the required FTE per hour
     if request.method == 'POST' and 'submit' in request.form:
@@ -551,6 +627,34 @@ def admin():
                     db.session.commit()
         return render_template('admin.html', monday=monday, timedelta=timedelta, day_num=day_num, template_form=time_form)
 
+    # Save templates
+    if request.method == 'POST' and 'template' in request.form:
+        for i in range(day_num):
+            for hour in range(24):
+
+                capacity = request.form.get(f'worker_{i}_{hour}')
+                if capacity:
+                    last = TemplateTimeRequirement.query.order_by(TemplateTimeRequirement.id.desc()).first()
+                    if last is None:
+                        new_id = 1
+                    else:
+                        new_id = last.id + 1
+                    new_name = time_form.template_name.data
+                    new_date = monday + datetime.timedelta(days=i)
+                    time_num = hour * 100
+                    time = f'{time_num:04d}'
+                    new_time = datetime.datetime.strptime(time, '%H%M').time()
+                    new_weekday = weekdays[i]
+
+                    data = TemplateTimeRequirement(id=new_id, template_name=new_name, date=new_date, weekday=new_weekday,
+                                                start_time=new_time, worker=capacity)
+
+                    db.session.add(data)
+                    db.session.commit()
+
+    #Update TimeReq - Still not working
+    pass
+
     #Remove entries of single dates
     if request.method == 'POST' and 'remove' in request.form:
         remove_date = time_form.date.data
@@ -565,7 +669,7 @@ def admin():
         return render_template('admin.html', monday=monday, timedelta=timedelta, day_num=day_num, Time=Time, template_form=time_form)
 
 
-    return render_template('admin.html', monday=monday, timedelta=timedelta, day_num=day_num, Time=Time, template_form=time_form)
+    return render_template('admin.html',  monday=monday, timedelta=timedelta, day_num=day_num, Time=Time, template_form=time_form)
 
 
 @app.route('/dashboard')
@@ -583,7 +687,15 @@ def opening():
     day_num = 7
     opening_form = UpdateForm(csrf_enabled = False, obj=opening_hour)
 
-    if request.method == 'POST':
+    temp_dict = {}
+    for i in range(day_num):
+        temp = OpeningHours.query.filter_by(weekday=weekdays[i]).first()
+        new_i = i + 1
+        temp_dict[str(new_i) + '&0'] = temp.start_time
+        temp_dict[str(new_i) + '&1'] = temp.end_time
+
+    #Save Opening
+    if request.method == 'POST' and 'submit' in request.form:
         for i in range(day_num):
             entry1 = request.form.get(f'day_{i}_0')
             entry2 = request.form.get(f'day_{i}_1')
@@ -593,20 +705,46 @@ def opening():
                     new_id = 1
                 else:
                     new_id = last.id + 1
-                new_entry1 = datetime.datetime.strptime(entry1, '%H:%M').time()
-                new_entry2 = datetime.datetime.strptime(entry2, '%H:%M').time()
+                new_date = datetime.date.today()
+                try:
+                    new_entry1 = datetime.datetime.strptime(entry1, '%H:%M:%S').time()
+                    new_entry2 = datetime.datetime.strptime(entry2, '%H:%M:%S').time()
+                except:
+                    new_entry1 = datetime.datetime.strptime(entry1, '%H:%M').time()
+                    new_entry2 = datetime.datetime.strptime(entry2, '%H:%M').time()
                 new_weekday = weekdays[i]
 
-                data = OpeningHours(id=new_id, weekday=new_weekday, start_time=new_entry1, end_time=new_entry2)
+
+                data = OpeningHours(id=new_id, date=new_date, weekday=new_weekday,
+                                    start_time=new_entry1, end_time=new_entry2)
+
 
                 db.session.add(data)
                 db.session.commit()
 
-    return render_template('opening.html', template_form=opening_form, weekdays=weekdays, day_num=day_num)
+    #Update Opening Hour - still not working
+    if opening_form.update.data:
+        try:
+            for i in range(day_num):
+                new_opening = OpeningHours.query.filter_by(id=i+1).first()
+                entry1 = request.form.get(f'day_{i}_0')
+                entry2 = request.form.get(f'day_{i}_1')
+                new_start_time = datetime.datetime.strptime(entry1, '%H:%M:%S').time()
+                new_end_time = datetime.datetime.strptime(entry2, '%H:%M:%S').time()
+                new_opening.start_time = new_start_time
+                new_opening.end_time = new_end_time
+                db.session.commit()
+                flash('Update successful submitted')
+                return redirect(url_for('opening'))
+        except:
+            db.session.rollback()
+            flash('Error occured :(')
+            return redirect(url_for('opening'))
+
+    return render_template('opening.html', template_form=opening_form, weekdays=weekdays, day_num=day_num, temp_dict=temp_dict)
 
 
 
 if __name__ == '__main__':
-
     app.run()
 
