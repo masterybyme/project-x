@@ -26,6 +26,12 @@
         {{ template_form.hidden_tag() }}
         <p>
         </p>
+        <input type='hidden' name='monday' value='{{ monday }}'>
+
+            <a> {{ template_form.prev_week }} | {{ template_form.next_week }} </a>
+            <p></p>
+             <a>{{ template_form.template1() }}  |  {{ template_form.template2() }}  |  {{ template_form.template3() }}</a>
+            <p></p>
         <TABLE>
             <thead>
                 <TR>
@@ -44,7 +50,13 @@
                     </TD>
                     {% for hour in range(24) %}
                     <TD>
-                        <input type='number' name='worker_{{ i }}_{{ hour }}' style='width: 40px'>
+                        {% set new_i = i + 1 %}
+                        {% set worker_value = new_i ~ '&' ~ hour %}
+                        {% if worker_value in temp_dict %}
+                            <input type='number' name='worker_{{ i }}_{{ hour }}' value='{{ temp_dict[worker_value] }}' style='width: 40px'>
+                        {% else %}
+                            <input type='number' name='worker_{{ i }}_{{ hour }}' style='width: 40px'>
+                        {% endif %}
                     </TD>
                     {% endfor %}
                 </TR>
@@ -56,7 +68,9 @@
         <p>
             {{ template_form.submit() }}
         </p>
-
+        <p>
+            {{ template_form.template_name() }}{{ template_form.template() }}
+        </p>
         <p></p>
         <p></p>
         <p>

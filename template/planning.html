@@ -45,7 +45,13 @@
                     </TD>
                     {% for vari in range(2) %}
                     <TD ALIGN="CENTER">
-                        <input type='time' name='day_{{ i }}_{{ vari }}' value='{{ i }}+{{ vari }}' style='width: 70px'>
+                        {% set new_i = i + 1 %}
+                        {% set time_value = new_i ~ '&' ~ vari %}
+                        {% if time_value in temp_dict %}
+                            <input type='time' name='day_{{ i }}_{{ vari }}' value='{{ temp_dict[time_value] }}' style='width: 70px'>
+                        {% else %}
+                            <input type='time' name='day_{{ i }}_{{ vari }}' value='00:00' style='width: 70px'>
+                        {% endif %}
                     </TD>
                     {% endfor %}
                 </TR>
