@@ -33,8 +33,12 @@
             <thead>
                 <TR>
                     <TH WIDTH='100' ALIGN="LEFT">Date</TH>
-                    <TH WIDTH='90' ALIGN="CENTER">Start Time</TH>
-                    <TH WIDTH='90' ALIGN="CENTER">End Time</TH>
+                    <TH WIDTH='90' ALIGN="CENTER">Start Time 1</TH>
+                    <TH WIDTH='90' ALIGN="CENTER">End Time 1</TH>
+                    <TH WIDTH='90' ALIGN="CENTER">Start Time 2</TH>
+                    <TH WIDTH='90' ALIGN="CENTER">End Time 2</TH>
+                    <TH WIDTH='90' ALIGN="CENTER">Start Time 3</TH>
+                    <TH WIDTH='90' ALIGN="CENTER">End Time 3</TH>
                 </TR>
             </thead>
             <TBODY>
@@ -43,7 +47,7 @@
                     <TD>
                         {{ weekdays[i] }}
                     </TD>
-                    {% for vari in range(2) %}
+                    {% for vari in range(6) %}
                     <TD ALIGN="CENTER">
                         {% set new_i = i + 1 %}
                         {% set time_value = new_i ~ '&' ~ vari %}

@@ -25,6 +25,10 @@
                 <TH WIDTH="100" ALIGN="CENTER"><strong>Day</strong></TH>
                 <TH WIDTH="100" ALIGN="CENTER"><strong>Start Time</strong></TH>
                 <TH WIDTH="100" ALIGN="CENTER"><strong>End Time</strong></TH>
+                <TH WIDTH="100" ALIGN="CENTER"><strong>Start Time 2</strong></TH>
+                <TH WIDTH="100" ALIGN="CENTER"><strong>End Time 2</strong></TH>
+                <TH WIDTH="100" ALIGN="CENTER"><strong>Start Time 3</strong></TH>
+                <TH WIDTH="100" ALIGN="CENTER"><strong>End Time 3</strong></TH>
             </TR>
          </THEAD>
          {% for i in available %}
@@ -34,6 +38,10 @@
                 <TD WIDTH="100" ALIGN="CENTER">{{ i.weekday }}</TD>
                 <TD WIDTH="100" ALIGN="CENTER">{{ i.start_time }}</TD>
                 <TD WIDTH="100" ALIGN="CENTER">{{ i.end_time }}</TD>
+                <TD WIDTH="100" ALIGN="CENTER">{{ i.start_time2 }}</TD>
+                <TD WIDTH="100" ALIGN="CENTER">{{ i.end_time2 }}</TD>
+                <TD WIDTH="100" ALIGN="CENTER">{{ i.start_time3 }}</TD>
+                <TD WIDTH="100" ALIGN="CENTER">{{ i.end_time3 }}</TD>
                 <TD WIDTH="100" ALIGN="CENTER"><a href="{{ url_for('delete_availability', id=i.id) }}">Delete</a></TD>
             </TR>
         </TBODY>
