@@ -1,128 +1,188 @@
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homepage</title>
-    <link href = "{{ url_for('static', filename='style.css') }}" rel = "stylesheet">
-
-</head>
-<body>
-    <div class="banner"> 
-        <div class="navbar">
-            <a href="{{ url_for('homepage') }}">
-                <img src="https://e1.pngegg.com/pngimages/605/146/png-clipart-oblytile-metro-icons-v1-1-spotify-spotify-logo.png" class="logo">
-              </a>
-            <ul>
-                <li><a href="{{ url_for('homepage')}}">Home</a></li>
-                <li><a href="{{ url_for('registration')}}">Registrieren</a></li>
-                <li><a href="{{ url_for('login')}}">Login</a></li>
-            </ul>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/fontawesome.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://kit.fontawesome.com/a96bf55661.css"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div class="banner">
+      <div class="navbar">
+        <img
+          src="https://e1.pngegg.com/pngimages/605/146/png-clipart-oblytile-metro-icons-v1-1-spotify-spotify-logo.png"
+          class="logo"
+        />
+        <ul>
+          <li><a href="{{ url_for('homepage')}}">Home</a></li>
+          <li><a href="{{ url_for('registration')}}">Registrieren</a></li>
+          <li><a href="{{ url_for('login')}}">Login</a></li>
+        </ul>
+      </div>
+      <div class="content1">
+        <h1>Automatisierte Schichtplanung</h1>
+        <p>In wenigen Minuten den perfekten Schichtplan für das ganzes Team</p>
+        <div>
+          <button type="button"><span></span>Infos</button>
+          <button type="button"><span></span>Registrieren</button>
         </div>
-        <div class="content1">
-            <h1>Automatisierte Schichtplanung</h1>
-            <p>In wenigen Minuten den perfekten Schichtplan für das ganze Team</p>
-            <div>
-                <button type="button"><span></span>Infos</button>
-                <button type="button"><span></span>Registrieren</button>
-            </div>
-        </div>
+      </div>
     </div>
 
-<!-- Features -->
-<section id="feature">
-    <div class="title-text">
+    <!-- Features -->
+    <section id="feature">
+      <div class="title-text">
         <p>FEATURES</p>
         <h1>Wieso automatisierte Schichtplanung</h1>
-    </div>
-    <div class="feature-box">
+      </div>
+      <div class="feature-box">
         <div class="features">
-            <h1>Effizienz</h1>
-            <div class="features-desc">
-                <div class="feature-icon">
-                    <i class="fa-solid fa-gear"></i>
-                </div>
-                <div class="feature-text">
-                    <p>Durch die Automatisierung des Schichtplanungsprozesses können Unternehmen Zeit und Ressourcen sparen. Das manuelle Erstellen von Schichtplänen kann sehr zeitaufwändig sein und erfordert oft viel manuelle Arbeit. Automatisierte Schichtplanung ermöglicht es Unternehmen, ihre Schichtpläne schnell und effizient zu erstellen, was Zeit und Geld spart.</p>
-                </div>
+          <h1>Effizienz</h1>
+          <div class="features-desc">
+            <div class="feature-icon">
+              <i class="fa fa-shield"></i>
             </div>
-            <h1>Genauigkeit</h1>
-            <div class="features-desc">
-                <div class="feature-icon">
-                    <i class="fa-solid fa-bolt"></i>
-                </div>
-                <div class="feature-text">
-                    <p>Die manuelle Schichtplanung ist anfällig für menschliche Fehler, wie z.B. Doppelbuchungen oder falsch geplante Arbeitszeiten. Automatisierte Schichtplanung reduziert das Risiko von Fehlern und sorgt dafür, dass Schichtpläne genau und zuverlässig sind.</p>
-                </div>
+            <div class="feature-text">
+              <p>
+                Durch die Automatisierung des Schichtplanungsprozesses können
+                Unternehmen Zeit und Ressourcen sparen. Das manuelle Erstellen
+                von Schichtplänen kann sehr zeitaufwändig sein und erfordert oft
+                viel manuelle Arbeit. Automatisierte Schichtplanung ermöglicht
+                es Unternehmen, ihre Schichtpläne schnell und effizient zu
+                erstellen, was Zeit und Geld spart.
+              </p>
             </div>
-            <h1>Flexibilität</h1>
-            <div class="features-desc">
-                <div class="feature-icon">
-                    <i class="fa-solid fa-bolt"></i>
-                </div>
-                <div class="feature-text">
-                    <p>Automatisierte Schichtplanung ermöglicht es Unternehmen, schnell auf Veränderungen in der Arbeitsbelastung zu reagieren. Wenn beispielsweise ein Mitarbeiter ausfällt oder die Arbeitsbelastung unerwartet zunimmt, kann das System automatisch einen neuen Schichtplan erstellen, der diese Veränderungen berücksichtigt. Dadurch können Unternehmen flexibler auf unvorhergesehene Ereignisse reagieren und ihre Ressourcen optimal nutzen.</p>
-                </div>
+          </div>
+          <h1>Genauigkeit</h1>
+          <div class="features-desc">
+            <div class="feature-icon">
+              <i class="fa fa-check-square-o"></i>
             </div>
+            <div class="feature-text">
+              <p>
+                Die manuelle Schichtplanung ist anfällig für menschliche Fehler,
+                wie z.B. Doppelbuchungen oder falsch geplante Arbeitszeiten.
+                Automatisierte Schichtplanung reduziert das Risiko von Fehlern
+                und sorgt dafür, dass Schichtpläne genau und zuverlässig sind.
+              </p>
+            </div>
+          </div>
+          <h1>Flexibilität</h1>
+          <div class="features-desc">
+            <div class="feature-icon">
+              <i class="fa fa-inr"></i>
+            </div>
+            <div class="feature-text">
+              <p>
+                Automatisierte Schichtplanung ermöglicht es Unternehmen, schnell
+                auf Veränderungen in der Arbeitsbelastung zu reagieren. Wenn
+                beispielsweise ein Mitarbeiter ausfällt oder die
+                Arbeitsbelastung unerwartet zunimmt, kann das System automatisch
+                einen neuen Schichtplan erstellen, der diese Veränderungen
+                berücksichtigt. Dadurch können Unternehmen flexibler auf
+                unvorhergesehene Ereignisse reagieren und ihre Ressourcen
+                optimal nutzen.
+              </p>
+            </div>
+          </div>
         </div>
         <div class="features-img">
-            <img src="{{ url_for('static', filename='barber-man.jpg') }}">
+          <img src="wokring.jpg" />
         </div>
-    </div>
-</section>
+      </div>
+    </section>
 
-<!-- Service -->
+    <!-- Service -->
 
-<section id="service">
-    <div class="title-text">
+    <section id="service">
+      <div class="title-text">
         <p>SERVICES</p>
         <h1>We provide the best service</h1>
-    </div>
-    <div class="service-box">
+      </div>
+      <div class="service-box">
         <div class="single-service">
-            <img src="https://cdn.pixabay.com/photo/2016/11/29/12/54/cafe-1869656_960_720.jpg">
-            <div class="overlay-service"></div>
-            <div class="service-desc">
-                <h3>Individuelle Anpassung</h3>
-                <hr>
-                <p>Wir bieten maßgeschneiderte Schichtplanungslösungen, die auf die spezifischen Anforderungen und Bedürfnisse jedes Kunden zugeschnitten sind. Wir analysieren die Bedürfnisse jedes Kunden und passen die Schichtplanungslösung entsprechend an.</p>
-            </div>
+          <img
+            src="https://cdn.pixabay.com/photo/2016/11/29/12/54/cafe-1869656_960_720.jpg"
+          />
+          <div class="overlay-service"></div>
+          <div class="service-desc">
+            <h3>Individuelle Anpassung</h3>
+            <hr />
+            <p>
+              Wir bieten maßgeschneiderte Schichtplanungslösungen, die auf die
+              spezifischen Anforderungen und Bedürfnisse jedes Kunden
+              zugeschnitten sind. Wir analysieren die Bedürfnisse jedes Kunden
+              und passen die Schichtplanungslösung entsprechend an.
+            </p>
+          </div>
         </div>
         <div class="single-service">
-            <img src="https://cdn.pixabay.com/photo/2020/10/01/17/11/store-5619201_960_720.jpg">
-            <div class="overlay-service"></div>
-            <div class="service-desc">
-                <h3>Erfahrung und Fachwissen</h3>
-                <hr>
-                <p>Unsere Schichtplanungsexperten verfügen über umfangreiche Erfahrung und Fachwissen in der Entwicklung und Implementierung von automatisierten Schichtplanungslösungen. Wir nutzen bewährte Methoden und Best Practices, um unseren Kunden die besten Lösungen zu bieten.</p>
-            </div>
+          <img
+            src="https://cdn.pixabay.com/photo/2020/10/01/17/11/store-5619201_960_720.jpg"
+          />
+          <div class="overlay-service"></div>
+          <div class="service-desc">
+            <h3>Erfahrung und Fachwissen</h3>
+            <hr />
+            <p>
+              Unsere Schichtplanungsexperten verfügen über umfangreiche
+              Erfahrung und Fachwissen in der Entwicklung und Implementierung
+              von automatisierten Schichtplanungslösungen. Wir nutzen bewährte
+              Methoden und Best Practices, um unseren Kunden die besten Lösungen
+              zu bieten.
+            </p>
+          </div>
         </div>
         <div class="single-service">
-            <img src="https://cdn.pixabay.com/photo/2015/11/02/06/09/brussels-1017977_960_720.jpg">
-            <div class="overlay-service"></div>
-            <div class="service-desc">
-                <h3>Zuverlässigkeit</h3>
-                <hr>
-                <p>Wir gewährleisten, dass unsere automatisierten Schichtplanungssysteme zuverlässig und stabil sind. Wir stellen sicher, dass die Systeme reibungslos funktionieren und die Schichtpläne zuverlässig und korrekt erstellt werden.</p>
-            </div>
+          <img
+            src="https://cdn.pixabay.com/photo/2015/11/02/06/09/brussels-1017977_960_720.jpg"
+          />
+          <div class="overlay-service"></div>
+          <div class="service-desc">
+            <h3>Zuverlässigkeit</h3>
+            <hr />
+            <p>
+              Wir gewährleisten, dass unsere automatisierten
+              Schichtplanungssysteme zuverlässig und stabil sind. Wir stellen
+              sicher, dass die Systeme reibungslos funktionieren und die
+              Schichtpläne zuverlässig und korrekt erstellt werden.
+            </p>
+          </div>
         </div>
         <div class="single-service">
-            <img src="https://images.pexels.com/photos/845451/pexels-photo-845451.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
-            <div class="overlay-service"></div>
-            <div class="service-desc">
-                <h3>Kundensupport</h3>
-                <hr>
-                <p>Wir bieten exzellenten Kundensupport, um sicherzustellen, dass unsere Kunden jederzeit Zugang zu Unterstützung und Lösungen haben. Unser Kundensupport-Team steht unseren Kunden zur Verfügung, um Fragen zu beantworten, Probleme zu lösen und Unterstützung bei der Verwendung unserer Schichtplanungslösungen zu bieten.</p>
-            </div>
+          <img src="pic-1.jpg" />
+          <div class="overlay-service"></div>
+          <div class="service-desc">
+            <h3>Kundensupport</h3>
+            <hr />
+            <p>
+              Wir bieten exzellenten Kundensupport, um sicherzustellen, dass
+              unsere Kunden jederzeit Zugang zu Unterstützung und Lösungen
+              haben. Unser Kundensupport-Team steht unseren Kunden zur
+              Verfügung, um Fragen zu beantworten, Probleme zu lösen und
+              Unterstützung bei der Verwendung unserer Schichtplanungslösungen
+              zu bieten.
+            </p>
+          </div>
         </div>
-    </div>
-</section>
-<!-- Footer -->
-<section id="footer">
-    <div class="title-text">
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <section id="footer">
+      <div class="title-text">
         <p>Contact</p>
-        <h1>contact us for more information</h1>
-    </div>
-</section>
-</body>
+        <h1>Show your tits</h1>
+      </div>
+    </section>
+  </body>
 </html>
