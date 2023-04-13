@@ -1,4 +1,5 @@
-from flask import Flask, render_template, current_app, request, redirect, flash, url_for, abort, session
+from flask import Flask, render_template, current_app, request, redirect, flash, url_for, abort, session, send_from_directory
+import os
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user, logout_user, login_required, UserMixin, login_user
 from flask_wtf import FlaskForm
@@ -11,9 +12,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 
 #Config
+#Added static_folder for react config
 #----------------------------------------------------------------------------------
 
-app = Flask(__name__, template_folder='template')
+app = Flask(__name__, template_folder='template', static_folder='client/build')
 
 
 #SET SQLALCHEMY
@@ -828,8 +830,19 @@ def opening():
 
     return render_template('opening.html', template_form=opening_form, weekdays=weekdays, day_num=day_num, temp_dict=temp_dict)
 
+# NEW Serve the React dashboard
+@app.route('/dashboard')
+def dashboard():
+    return send_from_directory(os.path.join(app.root_path, 'client/build'), 'index.html')
 
+# NEW Serve static files for the React app
+@app.route('/static/<path:path>')
+def serve_static(path):
+    root_dir = os.path.dirname(os.getcwd())
+    response = send_from_directory(os.path.join(root_dir, 'client/build/static'), path)
+    response.headers['Cache-Control'] = 'public, max-age=3600'  # Cache for 1 hour
+    return response
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
 
