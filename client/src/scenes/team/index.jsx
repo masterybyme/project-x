@@ -20,19 +20,19 @@ const Team = () => {
     },
     {
       field: "age",
-      headerName: "Age",
+      headerName: "Alter",
       type: "number",
       headerAlign: "left",
       align: "left",
     },
     {
       field: "phone",
-      headerName: "Phone Number",
+      headerName: "Mobile",
       flex: 1,
     },
     {
       field: "email",
-      headerName: "Email",
+      headerName: "E-mail",
       flex: 1,
     },
     {

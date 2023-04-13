@@ -20,34 +20,34 @@ const Contacts = () => {
     },
     {
       field: "age",
-      headerName: "Age",
+      headerName: "Alter",
       type: "number",
       headerAlign: "left",
       align: "left",
     },
     {
-      field: "phone",
+      field: "Mobile",
       headerName: "Phone Number",
       flex: 1,
     },
     {
       field: "email",
-      headerName: "Email",
+      headerName: "E-mail",
       flex: 1,
     },
     {
       field: "address",
-      headerName: "Address",
+      headerName: "Adresse",
       flex: 1,
     },
     {
       field: "city",
-      headerName: "City",
+      headerName: "Ort",
       flex: 1,
     },
     {
       field: "zipCode",
-      headerName: "Zip Code",
+      headerName: "Postcode",
       flex: 1,
     },
   ];
@@ -55,8 +55,8 @@ const Contacts = () => {
   return (
     <Box m="20px">
       <Header
-        title="CONTACTS"
-        subtitle="List of Contacts for Future Reference"
+        title="Kontakte"
+        subtitle="Kontaktdaten in einer Übersicht"
       />
       <Box
         m="40px 0 0 0"
