@@ -14,7 +14,7 @@ from functools import wraps
 #Added static_folder for react config
 #----------------------------------------------------------------------------------
 
-app = Flask(__name__, template_folder='template', static_folder='client/build')
+app = Flask(__name__, template_folder='template')
 
 
 #SET SQLALCHEMY
