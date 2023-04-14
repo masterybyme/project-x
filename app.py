@@ -151,7 +151,7 @@ class User(db.Model, UserMixin):
     access_level = db.Column(db.String(200), index=True, unique=False)
     created_by = db.Column(db.Integer, index=True, unique=False)
     changed_by = db.Column(db.Integer, index=True, unique=False)
-    timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
+    timestamp = db.Column(db.DateTime, default=datetime.now)
 
 
     def __init__(self, id, company_id, first_name, last_name, email, password, employment_level, company_name, department,
@@ -184,7 +184,7 @@ class Availability(db.Model, UserMixin):
     end_time3 = db.Column(db.Time)
     created_by = db.Column(db.Integer, index=True, unique=False)
     changed_by = db.Column(db.Integer, index=True, unique=False)
-    timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
+    timestamp = db.Column(db.DateTime, default=datetime.now)
 
     def __init__(self, id, email, date, weekday, start_time, end_time, start_time2, end_time2, start_time3, end_time3,
                  created_by, changed_by):
@@ -210,7 +210,7 @@ class TimeReq(db.Model, UserMixin):
     worker = db.Column(db.Integer)
     created_by = db.Column(db.Integer, index=True, unique=False)
     changed_by = db.Column(db.Integer, index=True, unique=False)
-    timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
+    timestamp = db.Column(db.DateTime, default=datetime.now)
 
     def __init__(self, id, date, start_time, worker, created_by, changed_by):
         self.id = id
@@ -229,7 +229,7 @@ class Company(db.Model, UserMixin):
     shifts = db.Column(db.Integer)
     created_by = db.Column(db.Integer, index=True, unique=False)
     changed_by = db.Column(db.Integer, index=True, unique=False)
-    timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
+    timestamp = db.Column(db.DateTime, default=datetime.now)
 
     def __init__(self, id, company_name, weekly_hours, shifts, created_by, changed_by):
         self.id = id
@@ -248,7 +248,7 @@ class OpeningHours(db.Model, UserMixin):
     end_time = db.Column(db.Time)
     created_by = db.Column(db.Integer, index=True, unique=False)
     changed_by = db.Column(db.Integer, index=True, unique=False)
-    timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
+    timestamp = db.Column(db.DateTime, default=datetime.now)
 
     def __init__(self, id, weekday, start_time, end_time, created_by, changed_by):
         self.id = id
@@ -274,7 +274,7 @@ class Timetable(db.Model, UserMixin):
     end_time3 = db.Column(db.Time)
     created_by = db.Column(db.Integer, index=True, unique=False)
     changed_by = db.Column(db.Integer, index=True, unique=False)
-    timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
+    timestamp = db.Column(db.DateTime, default=datetime.now)
 
 
     def __init__(self, id, email, first_name, last_name, date, start_time, end_time, start_time2, end_time2,
@@ -304,7 +304,7 @@ class TemplateTimeRequirement(db.Model, UserMixin):
     worker = db.Column(db.Integer)
     created_by = db.Column(db.Integer, index=True, unique=False)
     changed_by = db.Column(db.Integer, index=True, unique=False)
-    timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
+    timestamp = db.Column(db.DateTime, default=datetime.now)
 
     def __init__(self, id, template_name, date, weekday, start_time, worker, created_by, changed_by):
         self.id = id
@@ -332,7 +332,7 @@ class TemplateAvailability(db.Model, UserMixin):
     end_time3 = db.Column(db.Time)
     created_by = db.Column(db.Integer, index=True, unique=False)
     changed_by = db.Column(db.Integer, index=True, unique=False)
-    timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
+    timestamp = db.Column(db.DateTime, default=datetime.now)
 
     def __init__(self, id, template_name, email, date, weekday, start_time, end_time, start_time2, end_time2,
                  start_time3, end_time3, created_by, changed_by):
@@ -829,18 +829,7 @@ def opening():
 
     return render_template('opening.html', template_form=opening_form, weekdays=weekdays, day_num=day_num, temp_dict=temp_dict)
 
-# NEW Serve the React dashboard
-@app.route('/dashboard')
-def dashboard():
-    return send_from_directory(os.path.join(app.root_path, 'client/build'), 'index.html')
 
-# NEW Serve static files for the React app
-@app.route('/static/<path:path>')
-def serve_static(path):
-    root_dir = os.path.dirname(os.getcwd())
-    response = send_from_directory(os.path.join(root_dir, 'client/build/static'), path)
-    response.headers['Cache-Control'] = 'public, max-age=3600'  # Cache for 1 hour
-    return response
 
 if __name__ == '__main__':
     app.run(debug=True)
