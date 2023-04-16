@@ -20,7 +20,7 @@ app = Flask(__name__, template_folder='template')
 #SET SQLALCHEMY
 app.config["SECRET_KEY"] = "mysecret"
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mynewdb.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:ProjectX2023@localhost/projectxdb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://admin:ProjectX2023.@database-projectx-1-0.ctsu2n36dxrk.eu-central-1.rds.amazonaws.com/projectx'
 app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -151,7 +151,8 @@ class User(db.Model, UserMixin):
     access_level = db.Column(db.String(200), index=True, unique=False)
     created_by = db.Column(db.Integer, index=True, unique=False)
     changed_by = db.Column(db.Integer, index=True, unique=False)
-    timestamp = db.Column(db.DateTime, default=datetime.now)
+    creation_timestamp = db.Column(db.DateTime)
+    update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
 
 
     def __init__(self, id, company_id, first_name, last_name, email, password, employment_level, company_name, department,
@@ -184,7 +185,9 @@ class Availability(db.Model, UserMixin):
     end_time3 = db.Column(db.Time)
     created_by = db.Column(db.Integer, index=True, unique=False)
     changed_by = db.Column(db.Integer, index=True, unique=False)
-    timestamp = db.Column(db.DateTime, default=datetime.now)
+    creation_timestamp = db.Column(db.DateTime)
+    update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
+    user = db.relationship('User', secondary='user_availability', backref='user')
 
     def __init__(self, id, email, date, weekday, start_time, end_time, start_time2, end_time2, start_time3, end_time3,
                  created_by, changed_by):
@@ -203,6 +206,13 @@ class Availability(db.Model, UserMixin):
 
 
 
+user_availability = db.Table('user_availability',
+                             db.Column('availability_id', db.Integer, db.ForeignKey('availability.id')),
+                             db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
+                             )
+
+
+
 class TimeReq(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, index=True)
@@ -210,7 +220,8 @@ class TimeReq(db.Model, UserMixin):
     worker = db.Column(db.Integer)
     created_by = db.Column(db.Integer, index=True, unique=False)
     changed_by = db.Column(db.Integer, index=True, unique=False)
-    timestamp = db.Column(db.DateTime, default=datetime.now)
+    creation_timestamp = db.Column(db.DateTime)
+    update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __init__(self, id, date, start_time, worker, created_by, changed_by):
         self.id = id
@@ -229,7 +240,8 @@ class Company(db.Model, UserMixin):
     shifts = db.Column(db.Integer)
     created_by = db.Column(db.Integer, index=True, unique=False)
     changed_by = db.Column(db.Integer, index=True, unique=False)
-    timestamp = db.Column(db.DateTime, default=datetime.now)
+    creation_timestamp = db.Column(db.DateTime)
+    update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __init__(self, id, company_name, weekly_hours, shifts, created_by, changed_by):
         self.id = id
@@ -248,7 +260,8 @@ class OpeningHours(db.Model, UserMixin):
     end_time = db.Column(db.Time)
     created_by = db.Column(db.Integer, index=True, unique=False)
     changed_by = db.Column(db.Integer, index=True, unique=False)
-    timestamp = db.Column(db.DateTime, default=datetime.now)
+    creation_timestamp = db.Column(db.DateTime)
+    update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __init__(self, id, weekday, start_time, end_time, created_by, changed_by):
         self.id = id
@@ -274,7 +287,8 @@ class Timetable(db.Model, UserMixin):
     end_time3 = db.Column(db.Time)
     created_by = db.Column(db.Integer, index=True, unique=False)
     changed_by = db.Column(db.Integer, index=True, unique=False)
-    timestamp = db.Column(db.DateTime, default=datetime.now)
+    creation_timestamp = db.Column(db.DateTime)
+    update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
 
 
     def __init__(self, id, email, first_name, last_name, date, start_time, end_time, start_time2, end_time2,
@@ -304,7 +318,8 @@ class TemplateTimeRequirement(db.Model, UserMixin):
     worker = db.Column(db.Integer)
     created_by = db.Column(db.Integer, index=True, unique=False)
     changed_by = db.Column(db.Integer, index=True, unique=False)
-    timestamp = db.Column(db.DateTime, default=datetime.now)
+    creation_timestamp = db.Column(db.DateTime)
+    update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __init__(self, id, template_name, date, weekday, start_time, worker, created_by, changed_by):
         self.id = id
@@ -332,7 +347,8 @@ class TemplateAvailability(db.Model, UserMixin):
     end_time3 = db.Column(db.Time)
     created_by = db.Column(db.Integer, index=True, unique=False)
     changed_by = db.Column(db.Integer, index=True, unique=False)
-    timestamp = db.Column(db.DateTime, default=datetime.now)
+    creation_timestamp = db.Column(db.DateTime)
+    update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __init__(self, id, template_name, email, date, weekday, start_time, end_time, start_time2, end_time2,
                  start_time3, end_time3, created_by, changed_by):
@@ -393,7 +409,8 @@ def registration():
                     last_name = data_form.last_name.data, employment_level = data_form.employment_level.data,
                     company_name = data_form.company_name.data, department = data_form.department.data,
                     access_level = data_form.access_level.data, email = data_form.email.data, password = hash,
-                    created_by = new_company_id, changed_by = new_company_id)
+                    created_by = new_company_id, changed_by = new_company_id, creation_timestamp = datetime.datetime.now)
+
 
         try:
             db.session.add(data)
@@ -563,8 +580,11 @@ def planning():
                 data = Availability(id=new_id, date=new_date, weekday=new_weekday, email=user.email,
                                     start_time=new_entry1, end_time=new_entry2, start_time2=new_entry3,
                                     end_time2=new_entry4, start_time3=new_entry5, end_time3=new_entry6,
-                                    created_by=company_id, changed_by=company_id)
+                                    created_by=company_id, changed_by=company_id, creation_timestamp = datetime.datetime.now)
 
+                user_id = User.query.filter_by(id=current_user.id).all()
+
+                data.user.extend(user_id)
 
                 db.session.add(data)
                 db.session.commit()
@@ -597,7 +617,8 @@ def planning():
                 data = TemplateAvailability(id=new_id, template_name=new_name, date=new_date, weekday=new_weekday, email=user.email,
                                             start_time=new_entry1, end_time=new_entry2, start_time2=new_entry3,
                                             end_time2=new_entry4, start_time3=new_entry5, end_time3=new_entry6,
-                                            created_by=company_id, changed_by=company_id)
+                                            created_by=company_id, changed_by=company_id, creation_timestamp = datetime.datetime.now)
+
 
                 db.session.add(data)
                 db.session.commit()
@@ -703,7 +724,7 @@ def admin():
                     new_time = datetime.datetime.strptime(time, '%H%M').time()
 
                     req = TimeReq(id=new_id, date=new_date, start_time=new_time, worker=capacity, created_by=company_id,
-                                  changed_by=company_id)
+                                  changed_by=company_id, creation_timestamp = datetime.datetime.now)
 
                     db.session.add(req)
                     db.session.commit()
@@ -730,7 +751,7 @@ def admin():
 
                     data = TemplateTimeRequirement(id=new_id, template_name=new_name, date=new_date, weekday=new_weekday,
                                                    start_time=new_time, worker=capacity, created_by=company_id,
-                                                   changed_by=company_id)
+                                                   changed_by=company_id, creation_timestamp = datetime.datetime.now)
 
                     db.session.add(data)
                     db.session.commit()
@@ -802,7 +823,8 @@ def opening():
 
 
                 data = OpeningHours(id=new_id, weekday=new_weekday, start_time=new_entry1,
-                                    end_time=new_entry2, created_by=company_id, changed_by=company_id)
+                                    end_time=new_entry2, created_by=company_id, changed_by=company_id,
+                                    creation_timestamp = datetime.datetime.now)
 
 
                 db.session.add(data)
@@ -828,7 +850,6 @@ def opening():
             return redirect(url_for('opening'))
 
     return render_template('opening.html', template_form=opening_form, weekdays=weekdays, day_num=day_num, temp_dict=temp_dict)
-
 
 
 if __name__ == '__main__':
