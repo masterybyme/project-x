@@ -156,7 +156,7 @@ class User(db.Model, UserMixin):
 
 
     def __init__(self, id, company_id, first_name, last_name, email, password, employment_level, company_name, department,
-                 access_level, created_by, changed_by):
+                 access_level, created_by, changed_by, creation_timestamp):
         self.id = id
         self.company_id = company_id
         self.first_name = first_name
@@ -169,6 +169,7 @@ class User(db.Model, UserMixin):
         self.access_level = access_level
         self.created_by = created_by
         self.changed_by = changed_by
+        self.creation_timestamp = creation_timestamp
 
 
 
@@ -190,7 +191,7 @@ class Availability(db.Model, UserMixin):
     user = db.relationship('User', secondary='user_availability', backref='user')
 
     def __init__(self, id, email, date, weekday, start_time, end_time, start_time2, end_time2, start_time3, end_time3,
-                 created_by, changed_by):
+                 created_by, changed_by, creation_timestamp):
         self.id = id
         self.email = email
         self.date = date
@@ -203,6 +204,7 @@ class Availability(db.Model, UserMixin):
         self.end_time3 = end_time3
         self.created_by = created_by
         self.changed_by = changed_by
+        self.creation_timestamp = creation_timestamp
 
 
 
@@ -223,13 +225,14 @@ class TimeReq(db.Model, UserMixin):
     creation_timestamp = db.Column(db.DateTime)
     update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
 
-    def __init__(self, id, date, start_time, worker, created_by, changed_by):
+    def __init__(self, id, date, start_time, worker, created_by, changed_by, creation_timestamp):
         self.id = id
         self.date = date
         self.start_time = start_time
         self.worker = worker
         self.created_by = created_by
         self.changed_by = changed_by
+        self.creation_timestamp = creation_timestamp
 
 
 
@@ -243,13 +246,14 @@ class Company(db.Model, UserMixin):
     creation_timestamp = db.Column(db.DateTime)
     update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
 
-    def __init__(self, id, company_name, weekly_hours, shifts, created_by, changed_by):
+    def __init__(self, id, company_name, weekly_hours, shifts, created_by, changed_by, creation_timestamp):
         self.id = id
         self.company_name = company_name
         self.weekly_hours = weekly_hours
         self.shifts = shifts
         self.created_by = created_by
         self.changed_by = changed_by
+        self.creation_timestamp = creation_timestamp
 
 
 
@@ -263,13 +267,14 @@ class OpeningHours(db.Model, UserMixin):
     creation_timestamp = db.Column(db.DateTime)
     update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
 
-    def __init__(self, id, weekday, start_time, end_time, created_by, changed_by):
+    def __init__(self, id, weekday, start_time, end_time, created_by, changed_by, creation_timestamp):
         self.id = id
         self.weekday = weekday
         self.start_time = start_time
         self.end_time = end_time
         self.created_by = created_by
         self.changed_by = changed_by
+        self.creation_timestamp = creation_timestamp
 
 
 
@@ -292,7 +297,7 @@ class Timetable(db.Model, UserMixin):
 
 
     def __init__(self, id, email, first_name, last_name, date, start_time, end_time, start_time2, end_time2,
-                 start_time3, end_time3, created_by, changed_by):
+                 start_time3, end_time3, created_by, changed_by, creation_timestamp):
         self.id = id
         self.email = email
         self.first_name = first_name
@@ -306,6 +311,7 @@ class Timetable(db.Model, UserMixin):
         self.end_time3 = end_time3
         self.created_by = created_by
         self.changed_by = changed_by
+        self.creation_timestamp = creation_timestamp
 
 
 
@@ -321,7 +327,7 @@ class TemplateTimeRequirement(db.Model, UserMixin):
     creation_timestamp = db.Column(db.DateTime)
     update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
 
-    def __init__(self, id, template_name, date, weekday, start_time, worker, created_by, changed_by):
+    def __init__(self, id, template_name, date, weekday, start_time, worker, created_by, changed_by, creation_timestamp):
         self.id = id
         self.template_name = template_name
         self.date = date
@@ -330,6 +336,7 @@ class TemplateTimeRequirement(db.Model, UserMixin):
         self.worker = worker
         self.created_by = created_by
         self.changed_by = changed_by
+        self.creation_timestamp = creation_timestamp
 
 
 
@@ -351,7 +358,7 @@ class TemplateAvailability(db.Model, UserMixin):
     update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
 
     def __init__(self, id, template_name, email, date, weekday, start_time, end_time, start_time2, end_time2,
-                 start_time3, end_time3, created_by, changed_by):
+                 start_time3, end_time3, created_by, changed_by, creation_timestamp):
         self.id = id
         self.template_name = template_name
         self.email = email
@@ -365,6 +372,7 @@ class TemplateAvailability(db.Model, UserMixin):
         self.end_time3 = end_time3
         self.created_by = created_by
         self.changed_by = changed_by
+        self.creation_timestamp = creation_timestamp
 
 
 
@@ -392,6 +400,7 @@ def homepage():
 def registration():
     data_form = EmployeeForm(csrf_enabled=False)
     if request.method =='POST':
+        creation_date = datetime.datetime.now()
         last = User.query.order_by(User.id.desc()).first()
         hash = generate_password_hash(data_form.password.data)
         if last is None:
@@ -409,7 +418,7 @@ def registration():
                     last_name = data_form.last_name.data, employment_level = data_form.employment_level.data,
                     company_name = data_form.company_name.data, department = data_form.department.data,
                     access_level = data_form.access_level.data, email = data_form.email.data, password = hash,
-                    created_by = new_company_id, changed_by = new_company_id, creation_timestamp = datetime.datetime.now)
+                    created_by = new_company_id, changed_by = new_company_id, creation_timestamp = creation_date)
 
 
         try:
@@ -496,6 +505,7 @@ def update():
 def planning():
     # today's date
     today = datetime.date.today()
+    creation_date = datetime.datetime.now()
     monday = today - datetime.timedelta(days=today.weekday())
     weekdays = {0:'Monday', 1:'Tuesday', 2:'Wednesday', 3:'Thursday', 4:'Friday', 5:'Saturday', 6:'Sunday'}
     day_num = 7
@@ -580,7 +590,7 @@ def planning():
                 data = Availability(id=new_id, date=new_date, weekday=new_weekday, email=user.email,
                                     start_time=new_entry1, end_time=new_entry2, start_time2=new_entry3,
                                     end_time2=new_entry4, start_time3=new_entry5, end_time3=new_entry6,
-                                    created_by=company_id, changed_by=company_id, creation_timestamp = datetime.datetime.now)
+                                    created_by=company_id, changed_by=company_id, creation_timestamp = creation_date)
 
                 user_id = User.query.filter_by(id=current_user.id).all()
 
@@ -617,7 +627,7 @@ def planning():
                 data = TemplateAvailability(id=new_id, template_name=new_name, date=new_date, weekday=new_weekday, email=user.email,
                                             start_time=new_entry1, end_time=new_entry2, start_time2=new_entry3,
                                             end_time2=new_entry4, start_time3=new_entry5, end_time3=new_entry6,
-                                            created_by=company_id, changed_by=company_id, creation_timestamp = datetime.datetime.now)
+                                            created_by=company_id, changed_by=company_id, creation_timestamp = creation_date)
 
 
                 db.session.add(data)
@@ -662,6 +672,7 @@ def delete(id):
 def admin():
     time_form = TimeReqForm(csrf_enbled=False)
     Time = TimeReq.query.all()
+    creation_date = datetime.datetime.now()
     weekdays = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday', 4: 'Friday', 5: 'Saturday', 6: 'Sunday'}
     today = datetime.date.today()
     monday = today - datetime.timedelta(days=today.weekday())
@@ -724,7 +735,7 @@ def admin():
                     new_time = datetime.datetime.strptime(time, '%H%M').time()
 
                     req = TimeReq(id=new_id, date=new_date, start_time=new_time, worker=capacity, created_by=company_id,
-                                  changed_by=company_id, creation_timestamp = datetime.datetime.now)
+                                  changed_by=company_id, creation_timestamp = creation_date)
 
                     db.session.add(req)
                     db.session.commit()
@@ -751,7 +762,7 @@ def admin():
 
                     data = TemplateTimeRequirement(id=new_id, template_name=new_name, date=new_date, weekday=new_weekday,
                                                    start_time=new_time, worker=capacity, created_by=company_id,
-                                                   changed_by=company_id, creation_timestamp = datetime.datetime.now)
+                                                   changed_by=company_id, creation_timestamp = creation_date)
 
                     db.session.add(data)
                     db.session.commit()
@@ -787,6 +798,7 @@ def dashboard():
 @admin_required
 def opening():
     opening_hour = OpeningHours.query.all()
+    creation_date = datetime.datetime.now()
     weekdays = {0:'Monday', 1:'Tuesday', 2:'Wednesday', 3:'Thursday', 4:'Friday', 5:'Saturday', 6:'Sunday'}
     day_num = 7
     opening_form = UpdateForm(csrf_enabled = False, obj=opening_hour)
@@ -824,7 +836,7 @@ def opening():
 
                 data = OpeningHours(id=new_id, weekday=new_weekday, start_time=new_entry1,
                                     end_time=new_entry2, created_by=company_id, changed_by=company_id,
-                                    creation_timestamp = datetime.datetime.now)
+                                    creation_timestamp = creation_date)
 
 
                 db.session.add(data)
