@@ -1,17 +1,15 @@
-from flask import Flask, render_template, current_app, request, redirect, flash, url_for, abort, session, send_from_directory
-import os
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, current_user, logout_user, login_required, UserMixin, login_user
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, PasswordField, IntegerField, RadioField, TimeField, DateField, SelectField
-from wtforms.validators import DataRequired, EqualTo
-from datetime import datetime, timedelta
+from flask import Flask, render_template, current_app, request, redirect, flash, url_for, abort, session
+from flask_login import LoginManager, current_user, logout_user, login_required, login_user
+import datetime
+from datetime import timedelta
 from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
+import random
+from models import db
+
 
 #Config
-#Added static_folder for react config
 #----------------------------------------------------------------------------------
 
 app = Flask(__name__, template_folder='template')
@@ -22,7 +20,7 @@ app.config["SECRET_KEY"] = "mysecret"
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mynewdb.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://admin:ProjectX2023.@database-projectx-1-0.ctsu2n36dxrk.eu-central-1.rds.amazonaws.com/projectx'
 app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
-db = SQLAlchemy(app)
+db.init_app(app)
 migrate = Migrate(app, db)
 
 
@@ -62,319 +60,17 @@ def user_required(f):
     return decorated_function
 
 
-#Create of Forms
+#Import of Forms
 #--------------------------------------------------------------------------------
 
-class EmployeeForm(FlaskForm):
-    id = IntegerField("Id", validators=[DataRequired()])
-    first_name = StringField("First Name", validators=[DataRequired()])
-    last_name = StringField("Last Name", validators=[DataRequired()])
-    email = StringField("Email", validators=[DataRequired()])
-    employment_level = SelectField("Employment Level", choices=[(1, '100%'), (0.9, '90%'), (0.8, '80%'), (0.7, '70%'),
-                                                                (0.6, '60%'), (0.5, '50%'), (0.4, '40%'), (0.3, '30%'),
-                                                                (0.2, '20%'), (0.1, '10%')])
-    company_name = StringField("Company Name", validators=[DataRequired()])
-    department = StringField("Department", validators=[DataRequired()])
-    access_level = SelectField("Access Level", choices=[('Admin', 'Admin'), ('User', 'User')])
-    password = PasswordField("Password", validators=[DataRequired()])
-    password2 = PasswordField("Repeat Password", validators=[DataRequired(), EqualTo('password', message='Passwords must match')])
-    remove = IntegerField("Remove")
-    submit = SubmitField("Submit")
-    update = SubmitField("Update")
-
-class PlanningForm(FlaskForm):
-    id = IntegerField("Id", validators=[DataRequired()])
-    days = RadioField('Working Days', choices=[('value', 'Monday'), ('value_two', 'Tuesday'),
-                                               ('value_three', 'Wednesday'), ('value_four', 'Thursday'),
-                                               ('value_five', 'Friday'), ('value_six', 'Saturday'),
-                                               ('value_seven', 'Sunday'),])
-    submit = SubmitField('Submit')
-    template1 = SubmitField('Template1')
-    template2 = SubmitField('Template2')
-    template3 = SubmitField('Template 3')
-    template_name = StringField('Template Name')
-    template = SubmitField('Save Template')
-    prev_week = SubmitField('Previous Week')
-    next_week = SubmitField('Next Week')
+from forms import EmployeeForm, PlanningForm, UpdateForm, TimeReqForm, InviteForm
 
 
-
-class UpdateForm(FlaskForm):
-    first_name = StringField("First Name")
-    last_name = StringField("Last Name")
-    email = StringField("Email")
-    employment_level = SelectField("Employment Level", choices=[(1, '100%'), (0.9, '90%'), (0.8, '80%'), (0.7, '70%'),
-                                                                (0.6, '60%'), (0.5, '50%'), (0.4, '40%'), (0.3, '30%'),
-                                                                (0.2, '20%'), (0.1, '10%')])
-    company_name = StringField("Company Name")
-    department = StringField("Department")
-    access_level = SelectField("Access Level", choices=[('Admin', 'Admin'), ('User', 'User')])
-    password = PasswordField("Password")
-    password2 = PasswordField("Repeat Password",
-                              validators=[EqualTo('password', message='Passwords must match')])
-    remove = IntegerField("Remove")
-    submit = SubmitField("Submit")
-    update = SubmitField("Update")
-
-class TimeReqForm(FlaskForm):
-    id = IntegerField("Id", validators=[DataRequired()])
-    weeks = RadioField('Weeks', choices=[(1, 1), (2, 2), (3, 3), (4, 4)])
-    date = DateField('Date', format='%Y-%m-%d')
-    time = TimeField('Time', format='%H:%M')
-    worker = IntegerField('FTE')
-    submit = SubmitField('Submit')
-    remove = SubmitField('Remove')
-    template1 = SubmitField('Template1')
-    template2 = SubmitField('Template2')
-    template3 = SubmitField('Template 3')
-    template_name = StringField('Template Name')
-    template = SubmitField('Save Template')
-    prev_week = SubmitField('Previous Week')
-    next_week = SubmitField('Next Week')
-
-
-
-
-#Create of Database
+#Import of Database
 #-------------------------------------------------------------------------
 
-class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    company_id = db.Column(db.Integer, index=True, unique=False)
-    first_name = db.Column(db.String(100), index=True, unique=False)
-    last_name = db.Column(db.String(100), index=True, unique=False)
-    email = db.Column(db.String(200), index=True, unique=True)
-    password = db.Column(db.String(200))
-    employment_level = db.Column(db.Float, index=True, unique=False)
-    company_name = db.Column(db.String(200), index=True, unique=False)
-    department = db.Column(db.String(200), index=True, unique=False)
-    access_level = db.Column(db.String(200), index=True, unique=False)
-    created_by = db.Column(db.Integer, index=True, unique=False)
-    changed_by = db.Column(db.Integer, index=True, unique=False)
-    creation_timestamp = db.Column(db.DateTime)
-    update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
-
-
-    def __init__(self, id, company_id, first_name, last_name, email, password, employment_level, company_name, department,
-                 access_level, created_by, changed_by, creation_timestamp):
-        self.id = id
-        self.company_id = company_id
-        self.first_name = first_name
-        self.last_name = last_name
-        self.email = email
-        self.password = password
-        self.employment_level = employment_level
-        self.company_name = company_name
-        self.department = department
-        self.access_level = access_level
-        self.created_by = created_by
-        self.changed_by = changed_by
-        self.creation_timestamp = creation_timestamp
-
-
-
-class Availability(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(200), index=True, unique=False)
-    date = db.Column(db.Date, index=True)
-    weekday = db.Column(db.String(200), index=True, unique=False)
-    start_time = db.Column(db.Time)
-    end_time = db.Column(db.Time)
-    start_time2 = db.Column(db.Time)
-    end_time2 = db.Column(db.Time)
-    start_time3 = db.Column(db.Time)
-    end_time3 = db.Column(db.Time)
-    created_by = db.Column(db.Integer, index=True, unique=False)
-    changed_by = db.Column(db.Integer, index=True, unique=False)
-    creation_timestamp = db.Column(db.DateTime)
-    update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
-    user = db.relationship('User', secondary='user_availability', backref='user')
-
-    def __init__(self, id, email, date, weekday, start_time, end_time, start_time2, end_time2, start_time3, end_time3,
-                 created_by, changed_by, creation_timestamp):
-        self.id = id
-        self.email = email
-        self.date = date
-        self.weekday = weekday
-        self.start_time = start_time
-        self.end_time = end_time
-        self.start_time2 = start_time2
-        self.end_time2 = end_time2
-        self.start_time3 = start_time3
-        self.end_time3 = end_time3
-        self.created_by = created_by
-        self.changed_by = changed_by
-        self.creation_timestamp = creation_timestamp
-
-
-
-user_availability = db.Table('user_availability',
-                             db.Column('availability_id', db.Integer, db.ForeignKey('availability.id')),
-                             db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
-                             )
-
-
-
-class TimeReq(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, index=True)
-    start_time = db.Column(db.Time)
-    worker = db.Column(db.Integer)
-    created_by = db.Column(db.Integer, index=True, unique=False)
-    changed_by = db.Column(db.Integer, index=True, unique=False)
-    creation_timestamp = db.Column(db.DateTime)
-    update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
-
-    def __init__(self, id, date, start_time, worker, created_by, changed_by, creation_timestamp):
-        self.id = id
-        self.date = date
-        self.start_time = start_time
-        self.worker = worker
-        self.created_by = created_by
-        self.changed_by = changed_by
-        self.creation_timestamp = creation_timestamp
-
-
-
-class Company(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    company_name = db.Column(db.String(200), index=True, unique=False)
-    weekly_hours = db.Column(db.Integer)
-    shifts = db.Column(db.Integer)
-    created_by = db.Column(db.Integer, index=True, unique=False)
-    changed_by = db.Column(db.Integer, index=True, unique=False)
-    creation_timestamp = db.Column(db.DateTime)
-    update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
-
-    def __init__(self, id, company_name, weekly_hours, shifts, created_by, changed_by, creation_timestamp):
-        self.id = id
-        self.company_name = company_name
-        self.weekly_hours = weekly_hours
-        self.shifts = shifts
-        self.created_by = created_by
-        self.changed_by = changed_by
-        self.creation_timestamp = creation_timestamp
-
-
-
-class OpeningHours(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    weekday = db.Column(db.String(200), index=True, unique=False)
-    start_time = db.Column(db.Time)
-    end_time = db.Column(db.Time)
-    created_by = db.Column(db.Integer, index=True, unique=False)
-    changed_by = db.Column(db.Integer, index=True, unique=False)
-    creation_timestamp = db.Column(db.DateTime)
-    update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
-
-    def __init__(self, id, weekday, start_time, end_time, created_by, changed_by, creation_timestamp):
-        self.id = id
-        self.weekday = weekday
-        self.start_time = start_time
-        self.end_time = end_time
-        self.created_by = created_by
-        self.changed_by = changed_by
-        self.creation_timestamp = creation_timestamp
-
-
-
-class Timetable(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(200), index=True, unique=False)
-    first_name = db.Column(db.String(100), index=True, unique=False)
-    last_name = db.Column(db.String(100), index=True, unique=False)
-    date = db.Column(db.Date, index=True)
-    start_time = db.Column(db.Time)
-    end_time = db.Column(db.Time)
-    start_time2 = db.Column(db.Time)
-    end_time2 = db.Column(db.Time)
-    start_time3 = db.Column(db.Time)
-    end_time3 = db.Column(db.Time)
-    created_by = db.Column(db.Integer, index=True, unique=False)
-    changed_by = db.Column(db.Integer, index=True, unique=False)
-    creation_timestamp = db.Column(db.DateTime)
-    update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
-
-
-    def __init__(self, id, email, first_name, last_name, date, start_time, end_time, start_time2, end_time2,
-                 start_time3, end_time3, created_by, changed_by, creation_timestamp):
-        self.id = id
-        self.email = email
-        self.first_name = first_name
-        self.last_name = last_name
-        self.date = date
-        self.start_time = start_time
-        self.end_time = end_time
-        self.start_time2 = start_time2
-        self.end_time2 = end_time2
-        self.start_time3 = start_time3
-        self.end_time3 = end_time3
-        self.created_by = created_by
-        self.changed_by = changed_by
-        self.creation_timestamp = creation_timestamp
-
-
-
-class TemplateTimeRequirement(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    template_name = db.Column(db.String(200), index=True, unique=False)
-    date = db.Column(db.Date, index=True)
-    weekday = db.Column(db.String(200), index=True, unique=False)
-    start_time = db.Column(db.Time)
-    worker = db.Column(db.Integer)
-    created_by = db.Column(db.Integer, index=True, unique=False)
-    changed_by = db.Column(db.Integer, index=True, unique=False)
-    creation_timestamp = db.Column(db.DateTime)
-    update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
-
-    def __init__(self, id, template_name, date, weekday, start_time, worker, created_by, changed_by, creation_timestamp):
-        self.id = id
-        self.template_name = template_name
-        self.date = date
-        self.weekday = weekday
-        self.start_time = start_time
-        self.worker = worker
-        self.created_by = created_by
-        self.changed_by = changed_by
-        self.creation_timestamp = creation_timestamp
-
-
-
-class TemplateAvailability(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    template_name = db.Column(db.String(200), index=True, unique=False)
-    email = db.Column(db.String(200), index=True, unique=False)
-    date = db.Column(db.Date, index=True)
-    weekday = db.Column(db.String(200), index=True, unique=False)
-    start_time = db.Column(db.Time)
-    end_time = db.Column(db.Time)
-    start_time2 = db.Column(db.Time)
-    end_time2 = db.Column(db.Time)
-    start_time3 = db.Column(db.Time)
-    end_time3 = db.Column(db.Time)
-    created_by = db.Column(db.Integer, index=True, unique=False)
-    changed_by = db.Column(db.Integer, index=True, unique=False)
-    creation_timestamp = db.Column(db.DateTime)
-    update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
-
-    def __init__(self, id, template_name, email, date, weekday, start_time, end_time, start_time2, end_time2,
-                 start_time3, end_time3, created_by, changed_by, creation_timestamp):
-        self.id = id
-        self.template_name = template_name
-        self.email = email
-        self.date = date
-        self.weekday = weekday
-        self.start_time = start_time
-        self.end_time = end_time
-        self.start_time2 = start_time2
-        self.end_time2 = end_time2
-        self.start_time3 = start_time3
-        self.end_time3 = end_time3
-        self.created_by = created_by
-        self.changed_by = changed_by
-        self.creation_timestamp = creation_timestamp
-
-
+from models import User, Availability, user_availability, TimeReq, Company, OpeningHours, Timetable, \
+    TemplateAvailability, TemplateTimeRequirement, RegistrationToken
 
 
 #Define functions
@@ -864,6 +560,28 @@ def opening():
     return render_template('opening.html', template_form=opening_form, weekdays=weekdays, day_num=day_num, temp_dict=temp_dict)
 
 
+@app.route('/invite', methods = ['GET', 'POST'])
+@admin_required
+def invite():
+    invite_form = InviteForm(csrf_enabled=False)
+    company_id = current_user.company_id
+    if request.method == 'POST':
+        random_token = random.randint(100000,999999)
+        last = RegistrationToken.query.order_by(RegistrationToken.id.desc()).first()
+        if last is None:
+            new_id = 1
+        else:
+            new_id = last.id + 1
+
+        data = RegistrationToken(id=new_id, email=invite_form.email.data, token=random_token, created_by=company_id)
+
+        db.session.add(data)
+        db.session.commit()
+
+
+    return render_template('invite.html', template_form=invite_form)
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
 
