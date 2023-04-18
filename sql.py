@@ -3,28 +3,22 @@ import mysql.connector
 #CREATE MYSQL
 #------------------------------------------------------------------------------
 mydb = mysql.connector.connect(
-    host='localhost',
-    user='root',
-    password='ProjectX2023',
+    host='database-projectx-1-0.ctsu2n36dxrk.eu-central-1.rds.amazonaws.com',
+    user='admin',
+    password='ProjectX2023.',
     port = '3306',
-    database = 'projectxdb')
+    database = 'projectx')
 mycursor = mydb.cursor()
 
 #delete_table = 'DROP TABLE User'
-#create_db = 'CREATE DATABASE projectxdb'
-#create_table = 'CREATE TABLE xyz'
-delete_table_entries = 'TRUNCATE TABLE Opening_Hours'
+delete_db = 'DROP DATABASE projectx'
+#delete_table_entries = 'TRUNCATE TABLE User'
+#create_db = 'CREATE DATABASE IF NOT EXISTS projectx'
+#create_table = 'CREATE TABLE User'
 
-mycursor.execute(delete_table_entries)
+mycursor.execute(delete_db)
 
-#docker run --name mysql -e MYSQL_ROOT_PASSWORD=ProjectX2023 -d mysql:latest
-#docker ps
-#nvm ls
-#node -v
-#nvm install 19 (version)
-#node -v
-#docker run --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=ProjectX2023 -d mysql:latest
-#yarn start:dev
+#mysql -h database-projectx-1-0.ctsu2n36dxrk.eu-central-1.rds.amazonaws.com -u admin -p
 
 #for db in mycursor:
     #print(db)
