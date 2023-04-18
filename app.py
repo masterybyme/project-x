@@ -17,7 +17,6 @@ app = Flask(__name__, template_folder='template')
 
 #SET SQLALCHEMY
 app.config["SECRET_KEY"] = "mysecret"
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mynewdb.db'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://admin:ProjectX2023.@database-projectx-1-0.ctsu2n36dxrk.eu-central-1.rds.amazonaws.com/projectx'
 app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 db.init_app(app)
