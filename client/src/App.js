@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Topbar from "./scenes/global/Topbar";
 import Sidebar from "./scenes/global/Sidebar";
@@ -20,6 +20,13 @@ import Calendar from "./scenes/calendar";
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    fetch("/api/hello")
+      .then((response) => response.json())
+      .then((data) => setMessage(data.message));
+  }, []);
 
   return (
     <ColorModeContext.Provider value={colorMode}>
@@ -43,6 +50,7 @@ function App() {
               <Route path="/geography" element={<Geography />} />
               <Route path="/plan" element={<Plan />} />
             </Routes>
+            <p>{message}</p>
           </main>
         </div>
       </ThemeProvider>
