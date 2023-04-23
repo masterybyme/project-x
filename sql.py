@@ -18,7 +18,8 @@ delete_db = 'DROP DATABASE projectx'
 
 mycursor.execute(delete_db)
 
-#sudo apt-get update
+#curl ifconfig.me
+# sudo apt-get update
 #sudo apt-get install mysql-client
 #mysql -h database-projectx-1-0.ctsu2n36dxrk.eu-central-1.rds.amazonaws.com -u admin -p
 
