@@ -46,6 +46,11 @@ app.config['MAIL_USE_SSL'] = False
 mail = Mail(app)
 
 
+#SET WEBSITE PASSWORT
+app.secret_key = 'Only for Admins'
+password = 'Arsch_Und_Titten'
+
+
 
 #Define Login Requirement
 
@@ -102,7 +107,7 @@ def homepage():
 
 
 @app.route('/registration', methods = ['GET', 'POST'])
-def registration():
+def registration():   
     data_form = EmployeeForm(csrf_enabled=False)
     if request.method =='POST':
         creation_date = datetime.datetime.now()
