@@ -1,5 +1,6 @@
-from flask import Flask, render_template, current_app, request, redirect, flash, url_for, abort, session
+from flask import Flask, render_template, current_app, request, redirect, flash, url_for, abort, session, jsonify
 from flask_login import LoginManager, current_user, logout_user, login_required, login_user
+from flask_mail import Mail, Message
 import datetime
 from datetime import timedelta
 from flask_migrate import Migrate
@@ -32,6 +33,18 @@ login_manager.login_view = 'login'
 @login_manager.user_loader
 def load_user(id):
     return User.query.get(int(id))
+
+
+#SET FLASK MAIL
+app.config['MAIL_SERVER'] = 'mail.gmx.net'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USERNAME'] = 'timetab@gmx.ch'
+app.config['MAIL_DEFAULT_SENDER'] = 'timetab@gmx.ch'
+app.config['MAIL_PASSWORD'] = 'ProjectX2023.'
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+mail = Mail(app)
+
 
 
 #Define Login Requirement
@@ -78,17 +91,14 @@ from models import User, Availability, TimeReq, Company, OpeningHours, Timetable
 
     #General functions
     #-----------------------------------------------------------------------------
+@app.route('/react/test', methods=["GET", "POST"])
+def react_test():
+    return render_template('index.html')
+
+
 @app.route('/', methods=["GET", "POST"])
 def homepage():
-    data_form = EmployeeForm(csrf_enabled=False)
-    if request.method == 'POST':
-        id = data_form.remove.data
-        remove = User.query.get(id)
-
-        db.session.delete(remove)
-        db.session.commit()
-        flash('Successful')
-    return render_template('/homepage.html', template_form=data_form)
+    return render_template('homepage.html')
 
 
 @app.route('/registration', methods = ['GET', 'POST'])
@@ -577,10 +587,15 @@ def invite():
         db.session.add(data)
         db.session.commit()
 
+        msg = Message('Registration Token', recipients=['timetab@gmx.ch'])
+        msg.body = f"Hey there,\n \n Below you will find your registration token \n \n {random_token}"
+        mail.send(msg)
+        
+
 
     return render_template('invite.html', template_form=invite_form)
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
 
