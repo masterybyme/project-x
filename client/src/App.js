@@ -23,10 +23,21 @@ function App() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch("/api/hello")
-      .then((response) => response.json())
-      .then((data) => setMessage(data.message));
+    fetchData();
   }, []);
+
+  async function fetchData() {
+    try {
+     const response = await fetch('/api/dashboard');
+     const jsonData = await response.json();
+    
+      
+    // Set the fetched data to your component's state
+    setData(jsonData);
+    } catch (error) {
+    console.error('Error fetching data:', error);
+    }
+    }
 
   return (
     <ColorModeContext.Provider value={colorMode}>
