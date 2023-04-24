@@ -109,38 +109,86 @@ def react_dashboard():
 @app.route('/registration', methods = ['GET', 'POST'])
 def registration():   
     data_form = EmployeeForm(csrf_enabled=False)
-    if request.method =='POST':
-        creation_date = datetime.datetime.now()
-        last = User.query.order_by(User.id.desc()).first()
-        hash = generate_password_hash(data_form.password.data)
-        if last is None:
-            new_id = 1000
-        else:
-            new_id = last.id + 1
+    if data_form.validate_on_submit():
+        if request.method =='POST':
+            token = RegistrationToken.query.filter_by(token=data_form.token.data, email=data_form.email.data).first()
 
-        last_company_id = User.query.filter_by(company_name=data_form.company_name.data).order_by(User.company_id.desc()).first()
-        if last_company_id is None:
-            new_company_id = 1000
-        else:
-            new_company_id = last_company_id + 1
+            if token is None:
+                flash('Token does not exist. Please check your Confirmation Mail.')
+                return redirect(url_for('registration'))
+            else:
+                creation_date = datetime.datetime.now()
+                last = User.query.order_by(User.id.desc()).first()
+                hash = generate_password_hash(data_form.password.data)
+                if last is None:
+                    new_id = 1000
+                else:
+                    new_id = last.id + 1
 
-        data = User(id = new_id, company_id = new_company_id, first_name = data_form.first_name.data,
-                    last_name = data_form.last_name.data, employment_level = data_form.employment_level.data,
-                    company_name = data_form.company_name.data, department = data_form.department.data,
-                    access_level = data_form.access_level.data, email = data_form.email.data, password = hash,
-                    created_by = new_company_id, changed_by = new_company_id, creation_timestamp = creation_date)
+                last_company_id = User.query.filter_by(company_name=data_form.company_name.data).order_by(User.company_id.desc()).first()
+                if last_company_id is None:
+                    new_company_id = 1000
+                else:
+                    new_company_id = last_company_id + 1
+
+                data = User(id = new_id, company_id = new_company_id, first_name = data_form.first_name.data,
+                            last_name = data_form.last_name.data, employment_level = token.employment_level,
+                            company_name = token.company_name, department = token.department,
+                            access_level = token.access_level, email = token.email, password = hash,
+                            created_by = new_company_id, changed_by = new_company_id, creation_timestamp = creation_date)
 
 
-        try:
-            db.session.add(data)
-            db.session.commit()
-            flash('Registration successful submitted')
-            return redirect(url_for('login'))
-        except:
-            db.session.rollback()
-            flash('Error occured - Your mail might be already in use :(')
-            return redirect(url_for('registration'))
+                try:
+                    db.session.add(data)
+                    db.session.commit()
+                    flash('Registration successful submitted')
+                    return redirect(url_for('login'))
+                except:
+                    db.session.rollback()
+                    flash('Error occured - Your mail might be already in use :(')
+                    return redirect(url_for('registration'))
     else:
+        flash('Check your password again.')
+        return render_template('token_registration.html', data_tag=User.query.all(), template_form=data_form)
+
+
+@app.route('/registration/admin', methods = ['GET', 'POST'])
+def admin_registration():   
+    data_form = EmployeeForm(csrf_enabled=False)
+    if data_form.validate_on_submit():
+        if request.method =='POST':
+            creation_date = datetime.datetime.now()
+            last = User.query.order_by(User.id.desc()).first()
+            hash = generate_password_hash(data_form.password.data)
+            if last is None:
+                new_id = 1000
+            else:
+                new_id = last.id + 1
+
+            last_company_id = User.query.filter_by(company_name=data_form.company_name.data).order_by(User.company_id.desc()).first()
+            if last_company_id is None:
+                new_company_id = 1000
+            else:
+                new_company_id = last_company_id + 1
+
+            data = User(id = new_id, company_id = new_company_id, first_name = data_form.first_name.data,
+                        last_name = data_form.last_name.data, employment_level = data_form.employment_level.data,
+                        company_name = data_form.company_name.data, department = data_form.department.data,
+                        access_level = data_form.access_level.data, email = data_form.email.data, password = hash,
+                        created_by = new_company_id, changed_by = new_company_id, creation_timestamp = creation_date)
+
+
+            try:
+                db.session.add(data)
+                db.session.commit()
+                flash('Registration successful submitted')
+                return redirect(url_for('login'))
+            except:
+                db.session.rollback()
+                flash('Error occured - Your mail might be already in use :(')
+                return redirect(url_for('registration'))
+    else:
+        flash('Check your password again.')
         return render_template('registration.html', data_tag=User.query.all(), template_form=data_form)
 
 #NEW for react dashboard after login
@@ -206,6 +254,7 @@ def update():
             return redirect(url_for('user'))
     else:
         return render_template('update.html', data_tag=User.query.all(), account=new_data, template_form=user_form)
+
 
 
 @app.route('/planning', methods = ['GET', 'POST'])
@@ -575,7 +624,7 @@ def opening():
 @app.route('/invite', methods = ['GET', 'POST'])
 @admin_required
 def invite():
-    invite_form = InviteForm(csrf_enabled=False)
+    data_form = InviteForm(csrf_enabled=False)
     company_id = current_user.company_id
     if request.method == 'POST':
         random_token = random.randint(100000,999999)
@@ -585,7 +634,7 @@ def invite():
         else:
             new_id = last.id + 1
 
-        data = RegistrationToken(id=new_id, email=invite_form.email.data, token=random_token, created_by=company_id)
+        data = RegistrationToken(id=new_id, email=data_form.email.data, token=random_token, company_name=data_form.company_name.data, department=data_form.department.data, employment_level=data_form.employment_level.data, access_level=data_form.access_level.data, created_by=company_id)
 
         db.session.add(data)
         db.session.commit()
@@ -596,7 +645,7 @@ def invite():
         
 
 
-    return render_template('invite.html', template_form=invite_form)
+    return render_template('invite.html', template_form=data_form)
 
 
 if __name__ == '__main__':

@@ -21,6 +21,9 @@ class EmployeeForm(FlaskForm):
     remove = IntegerField("Remove")
     submit = SubmitField("Submit")
     update = SubmitField("Update")
+    token = IntegerField("Token", validators=[DataRequired()])
+
+
 
 class PlanningForm(FlaskForm):
     id = IntegerField("Id", validators=[DataRequired()])
@@ -75,5 +78,16 @@ class TimeReqForm(FlaskForm):
 
 
 class InviteForm(FlaskForm):
-    email = StringField('Email')
-    invite = SubmitField('Invite')
+    first_name = StringField("First Name", validators=[DataRequired()])
+    last_name = StringField("Last Name", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired()])
+    employment_level = SelectField("Employment Level", choices=[(1, '100%'), (0.9, '90%'), (0.8, '80%'), (0.7, '70%'),
+                                                                (0.6, '60%'), (0.5, '50%'), (0.4, '40%'), (0.3, '30%'),
+                                                                (0.2, '20%'), (0.1, '10%')])
+    company_name = StringField("Company Name", validators=[DataRequired()])
+    department = StringField("Department", validators=[DataRequired()])
+    access_level = SelectField("Access Level", choices=[('Admin', 'Admin'), ('User', 'User')])  
+    remove = IntegerField("Remove")
+    submit = SubmitField("Submit")
+    update = SubmitField("Update")
+    token = IntegerField("Token", validators=[DataRequired()])
