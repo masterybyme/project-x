@@ -1,4 +1,4 @@
-from flask import Flask, render_template, current_app, request, redirect, flash, url_for, abort, session, jsonify
+from flask import Flask, render_template, current_app, request, redirect, flash, url_for, abort, session, jsonify, send_from_directory
 from flask_login import LoginManager, current_user, logout_user, login_required, login_user
 from flask_mail import Mail, Message
 import datetime
@@ -101,7 +101,7 @@ from models import User, Availability, TimeReq, Company, OpeningHours, Timetable
     #General functions
     #-----------------------------------------------------------------------------
 #NEW for React app
-@app.route('/react-dashboard')
+@app.route('/')
 def react_dashboard():
     return render_template('index.html')
 
