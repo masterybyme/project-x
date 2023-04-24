@@ -21,6 +21,9 @@ class EmployeeForm(FlaskForm):
     remove = IntegerField("Remove")
     submit = SubmitField("Submit")
     update = SubmitField("Update")
+    token = IntegerField("Token", validators=[DataRequired()])
+
+
 
 class PlanningForm(FlaskForm):
     id = IntegerField("Id", validators=[DataRequired()])
@@ -73,7 +76,3 @@ class TimeReqForm(FlaskForm):
     prev_week = SubmitField('Previous Week')
     next_week = SubmitField('Next Week')
 
-
-class InviteForm(FlaskForm):
-    email = StringField('Email')
-    invite = SubmitField('Invite')
