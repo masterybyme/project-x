@@ -13,7 +13,11 @@ from models import db
 #Config
 #----------------------------------------------------------------------------------
 
-app = Flask(__name__, template_folder='template')
+app = Flask(__name__, static_folder='static', template_folder='./static/react-app/build')
+
+@app.route('/<path:path>')
+def serve_static_files(path):
+    return send_from_directory('./static/react-app/build', path)
 
 
 #SET SQLALCHEMY
@@ -96,14 +100,10 @@ from models import User, Availability, TimeReq, Company, OpeningHours, Timetable
 
     #General functions
     #-----------------------------------------------------------------------------
-@app.route('/react/test', methods=["GET", "POST"])
-def react_test():
+#NEW for React app
+@app.route('/react-dashboard')
+def react_dashboard():
     return render_template('index.html')
-
-
-@app.route('/', methods=["GET", "POST"])
-def homepage():
-    return render_template('homepage.html')
 
 
 @app.route('/registration', methods = ['GET', 'POST'])
@@ -143,26 +143,24 @@ def registration():
     else:
         return render_template('registration.html', data_tag=User.query.all(), template_form=data_form)
 
-
-@app.route('/login', methods = ['GET', 'POST'])
+#NEW for react dashboard after login
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    login_form = EmployeeForm(csrf_enabled = False)
+    login_form = EmployeeForm(csrf_enabled=False)
     if request.method == 'POST':
-        user = User.query.filter_by(email = login_form.email.data).first()
+        user = User.query.filter_by(email=login_form.email.data).first()
         if user is None:
             flash('User does not exist')
             return redirect(url_for('user'))
         login_user(user)
         if user and check_password_hash(user.password, login_form.password.data):
             flash('Successfully logged in')
-            return redirect(url_for('user'))
-
+            return redirect(url_for('react_dashboard'))
         else:
             flash('Please try again')
             return render_template('login.html', template_form=login_form)
-
     else:
-        return render_template('login.html', template_form = login_form)
+        return render_template('login.html', template_form=login_form)
 
 
 @app.route('/logout')
