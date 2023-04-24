@@ -10,13 +10,13 @@ mydb = mysql.connector.connect(
     database = 'projectx')
 mycursor = mydb.cursor()
 
-#delete_table = 'DROP TABLE RegistrationToken'
+delete_table = 'DROP TABLE registration_token'
 #delete_db = 'DROP DATABASE projectx'
 #delete_table_entries = 'TRUNCATE TABLE User'
 #create_db = 'CREATE DATABASE IF NOT EXISTS projectx'
-create_table = 'CREATE TABLE RegistrationToken'
+#create_table = 'CREATE TABLE RegistrationToken'
 
-mycursor.execute(create_table)
+mycursor.execute(delete_table)
 
 #curl ifconfig.me
 # sudo apt-get update
