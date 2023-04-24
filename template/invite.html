@@ -5,7 +5,7 @@
 <html>
      <head>
         <meta charset="UTF-8">
-        <title>Invite</title>
+        <title>Registration</title>
     </head>
     <body>
     {% for message in get_flashed_messages() %}
@@ -15,13 +15,58 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     {% endfor %}
-    <h1>Invite</h1>
-        <form action= '/invite' method = 'POST' class='<InviteForm'>
+    <h1>REGISTRATION</h1>
+        <form action= '/registration/admin' method = 'POST' class='<EmployeeForm'>
             {{ template_form.hidden_tag() }}
+            <TABLE>
+                <TR>
+                    <TD WIDTH="150">
+                        {{ template_form.email.label }}
+                    </TD>
+                    <TD WIDTH="300">
+                        {{ template_form.email() }}
+                    </TD>
+                <TR>
+                    <TD WIDTH="150">
+                        {{ template_form.company_name.label }}
+                    </TD>
+                    <TD WIDTH="300">
+                        {{ template_form.company_name() }}
+                    </TD>
+                </TR>
+                <TR>
+                    <TD WIDTH="150">
+                        {{ template_form.department.label }}
+                    </TD>
+                    <TD WIDTH="300">
+                        {{ template_form.department() }}
+                    </TD>
+                </TR>
+                <TR>
+                    <TD WIDTH="150">
+                        {{ template_form.employment_level.label }}
+                    </TD>
+                    <TD WIDTH="300">
+                        {{ template_form.employment_level() }}
+                    </TD>
+                </TR>
+                <TR>
+                    <TD WIDTH="150">
+                        Access Level
+                    </TD>
+                    <TD WIDTH="300">
+                        {{ template_form.access_level() }}
+                    </TD>
+                </TR>
+            </TABLE>
             <p>
-                {{ template_form.email() }} | {{ template_form.invite() }}
+                {{ template_form.submit() }}
             </p>
+            <p></p>
+            <p></p>
+            <p></p>
         </form>
+
     </body>
 
 </html>
