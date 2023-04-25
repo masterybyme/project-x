@@ -18,10 +18,10 @@ delete_table = 'DROP TABLE registration_token'
 
 mycursor.execute(delete_table)
 
-#curl ifconfig.me
+# curl ifconfig.me
 # sudo apt-get update
-#sudo apt-get install mysql-client
-#mysql -h database-projectx-1-0.ctsu2n36dxrk.eu-central-1.rds.amazonaws.com -u admin -p
+# sudo apt-get install mysql-client
+# mysql -h database-projectx-1-0.ctsu2n36dxrk.eu-central-1.rds.amazonaws.com -u admin -p
 
 #for db in mycursor:
     #print(db)
