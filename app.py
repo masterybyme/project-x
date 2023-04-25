@@ -13,7 +13,9 @@ from models import db
 #Config
 #----------------------------------------------------------------------------------
 
-app = Flask(__name__, static_folder='static', template_folder='./static/react-app/build')
+# app = Flask(__name__, static_folder='static', template_folder='./static/react-app/build')
+app = Flask(__name__, template_folder='template')
+
 
 @app.route('/<path:path>')
 def serve_static_files(path):
@@ -84,7 +86,7 @@ def user_required(f):
 #Import of Forms
 #--------------------------------------------------------------------------------
 
-from forms import EmployeeForm, PlanningForm, UpdateForm, TimeReqForm, InviteForm
+from forms import EmployeeForm, PlanningForm, UpdateForm, TimeReqForm, InviteForm, SolveForm
 
 
 #Import of Database
@@ -101,10 +103,15 @@ from models import User, Availability, TimeReq, Company, OpeningHours, Timetable
     #General functions
     #-----------------------------------------------------------------------------
 #NEW for React app
+
+"""
 @app.route('/')
 def react_dashboard():
     return render_template('index.html')
-
+"""
+@app.route('/')
+def homepage():
+    return render_template('homepage.html')
 
 @app.route('/registration', methods = ['GET', 'POST'])
 def registration():   
@@ -191,6 +198,7 @@ def admin_registration():
         flash('Check your password again.')
         return render_template('registration.html', data_tag=User.query.all(), template_form=data_form)
 
+
 #NEW for react dashboard after login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -203,7 +211,8 @@ def login():
         login_user(user)
         if user and check_password_hash(user.password, login_form.password.data):
             flash('Successfully logged in')
-            return redirect(url_for('react_dashboard'))
+            # eturn redirect(url_for('react_dashboard'))
+            return redirect(url_for('dashboard'))
         else:
             flash('Please try again')
             return render_template('login.html', template_form=login_form)
@@ -656,7 +665,7 @@ def invite():
         db.session.commit()
 
         msg = Message('Registration Token', recipients=['timetab@gmx.ch'])
-        msg.body = f"Hey there,\n \n Below you will find your registration token \n \n {random_token}"
+        msg.body = f"Hey there SHOW BOOBS, SEND NUDES,\n \n Below you will find your registration token \n \n {random_token}"
         mail.send(msg)
         
 

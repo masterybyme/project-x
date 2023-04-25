@@ -91,3 +91,7 @@ class InviteForm(FlaskForm):
     submit = SubmitField("Submit")
     update = SubmitField("Update")
     token = IntegerField("Token", validators=[DataRequired()])
+
+# Klasse für Forms für Solve Button, erstellt 13.04.23 von Gery
+class SolveForm(FlaskForm):
+    solve_button = SubmitField('Solve')
