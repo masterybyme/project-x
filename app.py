@@ -13,7 +13,6 @@ from models import db
 #Config
 #----------------------------------------------------------------------------------
 
-# app = Flask(__name__, static_folder='static', template_folder='./static/react-app/build')
 app = Flask(__name__, template_folder='template')
 
 
@@ -103,12 +102,12 @@ from models import User, Availability, TimeReq, Company, OpeningHours, Timetable
     #General functions
     #-----------------------------------------------------------------------------
 #NEW for React app
-
-"""
+'''
 @app.route('/')
 def react_dashboard():
-    return render_template('index.html')
-"""
+    return send_from_directory('static/react-app/build', 'index.html')
+'''
+
 @app.route('/')
 def homepage():
     return render_template('homepage.html')
