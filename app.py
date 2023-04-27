@@ -102,11 +102,11 @@ from models import User, Availability, TimeReq, Company, OpeningHours, Timetable
     #General functions
     #-----------------------------------------------------------------------------
 #NEW for React app
-'''
-@app.route('/')
+
+@app.route('/react_dashboard')
 def react_dashboard():
     return send_from_directory('static/react-app/build', 'index.html')
-'''
+
 
 @app.route('/')
 def homepage():
@@ -210,7 +210,7 @@ def login():
         login_user(user)
         if user and check_password_hash(user.password, login_form.password.data):
             flash('Successfully logged in')
-            # eturn redirect(url_for('react_dashboard'))
+            # return redirect(url_for('react_dashboard'))
             return redirect(url_for('dashboard'))
         else:
             flash('Please try again')
