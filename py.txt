@@ -71,7 +71,7 @@ from forms import EmployeeForm, PlanningForm, UpdateForm, TimeReqForm, InviteFor
 #Import of Database
 #-------------------------------------------------------------------------
 
-from models import User, Availability, user_availability, TimeReq, Company, OpeningHours, Timetable, \
+from models import User, Availability, TimeReq, Company, OpeningHours, Timetable, \
     TemplateAvailability, TemplateTimeRequirement, RegistrationToken
 
 
