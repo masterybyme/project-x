@@ -12,58 +12,46 @@ class DataProcessing:
         self.opening_hours = None
         self.laden_oeffnet = None
         self.laden_schliesst = None
+        self.user_availability = None
 
     def run(self):
         """ Die einzelnen Methoden werden in der Reihe nach ausgeführt """
-        #self.get_availability()
+        self.get_availability()
+        # Ausgabe user_availability
+        print(f"User Availability: {self.user_availability}")
         #self.get_opening_hours()
         #self.binaere_liste()
 
     def get_availability(self):
-        """ In dieser Funktion wird date, start_time, end_time aus der Availability Entität gezogen
-            und in einer Liste gespeichert. Key ist current_user_id """
+        """ In dieser Funktion wird user_id, date, start_time, end_time aus der Availability Entität gezogen
+            und in einer Liste gespeichert. Key ist user_id """
 
         print(f"Admin mit der User_id: {self.current_user_id} hat den Solve Button gedrückt.")
 
         with app.app_context():
-            # Kann erst ausgeführt werden, wenn die relationships gemacht sind
+            start_date = "2023-05-01"
+            end_date = "2023-05-07"
+            
             sql = text("""
-                SELECT a.date, a.start_time, a.end_time, ua.user_id
+                SELECT a.user_id, a.date, a.start_time, a.end_time
                 FROM availability a
-                JOIN UserAvailability ua ON a.id = ua.availability_id
-                WHERE ua.user_id = :current_user_id 
+                WHERE a.user_id = :current_user_id
+                AND a.date BETWEEN :start_date AND :end_date
             """)
             # execute = rohe Mysql Abfrage.
-            result = db.session.execute(sql, {"current_user_id": self.current_user_id})
+            result = db.session.execute(sql, {"current_user_id": self.current_user_id, "start_date": start_date, "end_date": end_date})
             # fetchall = alle Zeilen der Datenbank werden abgerufen und in einem Tupel gespeichert
             times = result.fetchall()
 
-            filtered_list = [
-                (datetime.date(2023, 4, 10), datetime.timedelta(seconds=25200), datetime.timedelta(seconds=43200), 1),
-                (datetime.date(2023, 4, 11), datetime.timedelta(seconds=25200), datetime.timedelta(seconds=43200), 1),
-                (datetime.date(2023, 4, 12), datetime.timedelta(seconds=32400), datetime.timedelta(seconds=50400), 1),
-                (datetime.date(2023, 4, 13), datetime.timedelta(0), datetime.timedelta(0), 1),
-                (datetime.date(2023, 4, 14), datetime.timedelta(0), datetime.timedelta(0), 1),
-                (datetime.date(2023, 4, 15), datetime.timedelta(0), datetime.timedelta(0), 1),
-                (datetime.date(2023, 4, 16), datetime.timedelta(0), datetime.timedelta(0), 1),
-                (datetime.date(2023, 4, 10), datetime.timedelta(seconds=28800), datetime.timedelta(seconds=50400), 2),
-                (datetime.date(2023, 4, 11), datetime.timedelta(seconds=25200), datetime.timedelta(seconds=57600), 2),
-                (datetime.date(2023, 4, 12), datetime.timedelta(seconds=32400), datetime.timedelta(seconds=39600), 2),
-                (datetime.date(2023, 4, 13), datetime.timedelta(seconds=36000), datetime.timedelta(seconds=43200), 2),
-                (datetime.date(2023, 4, 14), datetime.timedelta(seconds=32400), datetime.timedelta(seconds=57600), 2),
-                (datetime.date(2023, 4, 15), datetime.timedelta(seconds=28800), datetime.timedelta(seconds=39600), 2),
-                (datetime.date(2023, 4, 16), datetime.timedelta(0), datetime.timedelta(0), 2)]
-            print(filtered_list[0][0])
-            print(filtered_list[0][1])
-            print(filtered_list[0][2])
-            print(filtered_list[0][3])
-
             # Dictionarie erstellen mit user_id als Key:
             user_availability = defaultdict(list)
-            for date, start_time, end_time, user_id in times:
+            for user_id, date, start_time, end_time in times:
                 user_availability[user_id].append((date, start_time, end_time))
 
-            return user_availability
+            self.user_availability = user_availability
+
+
+
 
     def time_to_int_1(self, t):
         """ Die eingegebene Uhrzeit (hour, minute, second) wird in Stunden umgerechnet """
