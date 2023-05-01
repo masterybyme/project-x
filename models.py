@@ -44,6 +44,7 @@ class User(db.Model, UserMixin):
 
 class Availability(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
     email = db.Column(db.String(200), index=True, unique=False)
     date = db.Column(db.Date, index=True)
     weekday = db.Column(db.String(200), index=True, unique=False)
@@ -57,11 +58,11 @@ class Availability(db.Model, UserMixin):
     changed_by = db.Column(db.Integer, index=True, unique=False)
     creation_timestamp = db.Column(db.DateTime)
     update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
-    user = db.relationship('User', secondary='user_availability', backref='user')
 
-    def __init__(self, id, email, date, weekday, start_time, end_time, start_time2, end_time2, start_time3, end_time3,
+    def __init__(self, id, user_id, email, date, weekday, start_time, end_time, start_time2, end_time2, start_time3, end_time3,
                  created_by, changed_by, creation_timestamp):
         self.id = id
+        self.user_id = user_id
         self.email = email
         self.date = date
         self.weekday = weekday
@@ -74,13 +75,6 @@ class Availability(db.Model, UserMixin):
         self.created_by = created_by
         self.changed_by = changed_by
         self.creation_timestamp = creation_timestamp
-
-
-
-user_availability = db.Table('user_availability',
-                             db.Column('availability_id', db.Integer, db.ForeignKey('availability.id')),
-                             db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
-                             )
 
 
 
