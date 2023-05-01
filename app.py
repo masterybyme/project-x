@@ -378,14 +378,11 @@ def planning():
                 new_weekday = weekdays[i]
 
 
-                data = Availability(id=new_id, date=new_date, weekday=new_weekday, email=user.email,
+                data = Availability(id=new_id, user_id=current_user.id, date=new_date, weekday=new_weekday, email=user.email,
                                     start_time=new_entry1, end_time=new_entry2, start_time2=new_entry3,
                                     end_time2=new_entry4, start_time3=new_entry5, end_time3=new_entry6,
                                     created_by=company_id, changed_by=company_id, creation_timestamp = creation_date)
 
-                user_id = User.query.filter_by(id=current_user.id).all()
-
-                data.user.extend(user_id)
 
                 db.session.add(data)
                 db.session.commit()
