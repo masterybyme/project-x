@@ -210,7 +210,7 @@ def login():
         login_user(user)
         if user and check_password_hash(user.password, login_form.password.data):
             flash('Successfully logged in')
-            # return redirect(url_for('react_dashboard'))
+            #return redirect(url_for('react_dashboard'))
             return redirect(url_for('dashboard'))
         else:
             flash('Please try again')
@@ -242,6 +242,32 @@ def user():
     return render_template('user.html', available=Availability.query.filter_by(email=account.email),
                            account=account, template_form=user_form)
 
+'''
+#React user 
+@app.route('/users')
+@login_required
+def get_data():
+    # Only allow authenticated users to access the user data
+    if current_user.is_authenticated:
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM users')
+        data = cur.fetchall()
+        cur.close()
+        users = []
+        for user in data:
+            user_dict = {
+                'id': user[0],
+                'name': user[1],
+                'age': user[2],
+                'phone': user[3],
+                'email': user[4],
+                'access_level': user[5],
+            }
+            users.append(user_dict)
+        return jsonify(users)
+    else:
+        return 'Unauthorized', 401
+'''
 
 @app.route('/update', methods=["GET", "POST"])
 @login_required

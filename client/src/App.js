@@ -20,24 +20,24 @@ import Calendar from "./scenes/calendar";
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
+  const [users, setUsers] = useState([]);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
     fetchData();
   }, []);
 
+  //Datafetch for User-Display in Team.jsx 
   async function fetchData() {
     try {
-     const response = await fetch('/api/dashboard');
-     const jsonData = await response.json();
-    
-      
-    // Set the fetched data to your component's state
-    setData(jsonData);
+      const response = await fetch("/users");
+      const data = await response.json();
+      setUsers(data);
     } catch (error) {
-    console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
+      setMessage("An error occurred while fetching data.");
     }
-    }
+  }
 
   return (
     <ColorModeContext.Provider value={colorMode}>
@@ -49,7 +49,7 @@ function App() {
             <Topbar setIsSidebar={setIsSidebar} />
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/team" element={<Team />} />
+              <Route path="/team" element={<Team users={users} />} />
               <Route path="/contacts" element={<Contacts />} />
               <Route path="/invoices" element={<Invoices />} />
               <Route path="/form" element={<Form />} />
