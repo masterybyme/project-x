@@ -16,6 +16,7 @@ import Geography from "./scenes/geography";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
 import Calendar from "./scenes/calendar";
+import axios from "axios";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -27,11 +28,11 @@ function App() {
     fetchData();
   }, []);
 
-  //Datafetch for User-Display in Team.jsx 
+  //Datafetch for User-Display in Team.jsx
   async function fetchData() {
     try {
-      const response = await fetch("/users");
-      const data = await response.json();
+      const response = await axios.get("/users");
+      const data = response.data;
       setUsers(data);
     } catch (error) {
       console.error("Error fetching data:", error);
