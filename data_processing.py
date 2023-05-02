@@ -21,7 +21,8 @@ class DataProcessing:
         self.get_availability()
         # Ausgabe user_availability
         print(f"User Availability: {self.user_availability}")
-        #self.get_opening_hours()
+        # self.get_opening_hours()
+        # print(f"Opening Hours: {self.get_opening_hours}")
         self.binaere_liste()
         print(f"Binary Availability: {self.binary_availability}")
 
@@ -37,14 +38,25 @@ class DataProcessing:
             start_date = "2023-05-15"
             end_date = "2023-05-21"
             
+            # Hole den company_name des aktuellen Benutzers
+            sql = text("""
+                SELECT company_name
+                FROM user
+                WHERE id = :current_user_id
+            """)
+            result = db.session.execute(sql, {"current_user_id": self.current_user_id})
+            company_name = result.fetchone()[0]
+            
+            # Verfügbarkeiten für alle Benutzer mit demselben company_name abrufen
             sql = text("""
                 SELECT a.user_id, a.date, a.start_time, a.end_time
                 FROM availability a
-                WHERE a.user_id = :current_user_id
+                JOIN user u ON a.user_id = u.id
+                WHERE u.company_name = :company_name
                 AND a.date BETWEEN :start_date AND :end_date
             """)
             # execute = rohe Mysql Abfrage.
-            result = db.session.execute(sql, {"current_user_id": self.current_user_id, "start_date": start_date, "end_date": end_date})
+            result = db.session.execute(sql, {"company_name": company_name, "start_date": start_date, "end_date": end_date})
             # fetchall = alle Zeilen der Datenbank werden abgerufen und in einem Tupel gespeichert
             times = result.fetchall()
 
@@ -69,28 +81,26 @@ class DataProcessing:
 
 
 
-
-    def get_opening_hours(self): 
+    def get_opening_hours(self):
         """ In dieser Funktion werden die Öffnungszeiten der jeweiligen Company aus der Datenbank gezogen. """
         with app.app_context():
+            # Abfrage, um den company_name des aktuellen Benutzers zu erhalten
             sql = text("""
-                SELECT company_id
+                SELECT company_name
                 FROM user
                 WHERE id = :current_user_id
             """)
             result = db.session.execute(sql, {"current_user_id": self.current_user_id})
-            company_id = result.fetchone()[0]
+            company_name = result.fetchone()[0]
 
-            # Zuerst müssen die relationsships korrekt erstellt werden!
-
+            # Abfrage, um die Öffnungszeiten der Firma basierend auf dem company_name abzurufen
             sql = text("""
                 SELECT weekday, start_time, end_time
                 FROM opening_hours
-                WHERE company_id = :company_id
+                WHERE company_name = :company_name
             """)
-            result = db.session.execute(sql, {"company_id": company_id})
+            result = db.session.execute(sql, {"company_name": company_name})
             times = result.fetchall()
-
 
         for weekday, start_time, end_time in times:
             if not self.laden_oeffnet or start_time < self.laden_oeffnet:
@@ -103,10 +113,9 @@ class DataProcessing:
 
 
 
-
-
     def binaere_liste(self):
         """ In dieser Funktion werden die zuvor erstellen user_availabilities in binäre Listen umgewandelt. """
+
         # Testwerte für Ladenöffnungszeiten!!
         self.laden_oeffnet = time(hour=6)
         self.laden_schliesst = time(hour=17)
