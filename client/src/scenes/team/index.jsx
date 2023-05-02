@@ -12,21 +12,21 @@ const Team = ({ users }) => {
   const columns = [
     { field: "id", headerName: "ID" },
     {
-      field: "name",
-      headerName: "Name",
+      field: "first_name",
+      headerName: "Vorname",
       flex: 1,
       cellClassName: "name-column--cell",
     },
     {
-      field: "age",
-      headerName: "Alter",
+      field: "last_name",
+      headerName: "Nachname",
       type: "number",
       headerAlign: "left",
       align: "left",
     },
     {
-      field: "phone",
-      headerName: "Mobile",
+      field: "copmany_name",
+      headerName: "Firma",
       flex: 1,
     },
     {
@@ -99,7 +99,7 @@ const Team = ({ users }) => {
           },
         }}
       >
-        <DataGrid checkboxSelection rows={mockDataTeam} columns={columns} />
+        <DataGrid checkboxSelection rows={users} columns={columns} />
       </Box>
     </Box>
   );
