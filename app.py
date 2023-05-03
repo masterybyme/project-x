@@ -238,7 +238,7 @@ def user():
                            account=account, template_form=user_form)
 
 
-#React user 
+#React Teammember Overview 
 @app.route('/api/users')
 def get_data():
     users = User.query.all()
@@ -254,6 +254,41 @@ def get_data():
         }
         user_list.append(user_dict)
     return jsonify(user_list)
+
+#React Create User
+@app.route('/api/users/register', methods=['POST'])
+def register_user():
+    data = request.json
+    token = RegistrationToken.query.filter_by(token=data['token'], email=data['email']).first()
+    if token is None:
+        return jsonify({'message': 'Token does not exist. Please check your Confirmation Mail.'}), 400
+    else:
+        creation_date = datetime.datetime.now()
+        last = User.query.order_by(User.id.desc()).first()
+        hash = generate_password_hash(data['password'])
+        if last is None:
+            new_id = 1000
+        else:
+            new_id = last.id + 1
+
+        last_company_id = User.query.filter_by(company_name=token.company_name).order_by(User.company_id.desc()).first()
+        if last_company_id is None:
+            new_company_id = 1000
+        else:
+            new_company_id = last_company_id.company_id + 1
+
+        user = User(id=new_id, company_id=new_company_id, first_name=data['firstName'], last_name=data['lastName'], email=token.email,
+                    password=hash, employment_level=token.employment_level, company_name=token.company_name,
+                    department=token.department, access_level=token.access_level, created_by=new_company_id,
+                    changed_by=new_company_id, creation_timestamp=creation_date)
+
+        try:
+            db.session.add(user)
+            db.session.commit()
+            return jsonify({'message': 'Registration successful submitted'}), 200
+        except:
+            db.session.rollback()
+            return jsonify({'message': 'Error occurred - Your email might be already in use :('}), 500
 
 
 
