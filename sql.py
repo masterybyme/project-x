@@ -10,7 +10,7 @@ mydb = mysql.connector.connect(
     database = 'projectx')
 mycursor = mydb.cursor()
 
-delete_table = 'DROP TABLE availability'
+delete_table = 'DROP TABLE opening_hours'
 #delete_db = 'DROP DATABASE projectx'
 #delete_table_entries = 'TRUNCATE TABLE User'
 #create_db = 'CREATE DATABASE IF NOT EXISTS projectx'

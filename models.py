@@ -100,8 +100,8 @@ class TimeReq(db.Model, UserMixin):
 
 
 class Company(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    company_name = db.Column(db.String(200), index=True, unique=False)
+    id = db.Column(db.Integer)
+    company_name = db.Column(db.String(200), primary_key=True)
     weekly_hours = db.Column(db.Integer)
     shifts = db.Column(db.Integer)
     created_by = db.Column(db.Integer, index=True, unique=False)
@@ -122,6 +122,7 @@ class Company(db.Model, UserMixin):
 
 class OpeningHours(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
+    company_name = db.Column(db.String(200), index=True, unique=False)
     weekday = db.Column(db.String(200), index=True, unique=False)
     start_time = db.Column(db.Time)
     end_time = db.Column(db.Time)
@@ -130,8 +131,9 @@ class OpeningHours(db.Model, UserMixin):
     creation_timestamp = db.Column(db.DateTime)
     update_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
 
-    def __init__(self, id, weekday, start_time, end_time, created_by, changed_by, creation_timestamp):
+    def __init__(self, id, company_name, weekday, start_time, end_time, created_by, changed_by, creation_timestamp):
         self.id = id
+        self.company_name = company_name
         self.weekday = weekday
         self.start_time = start_time
         self.end_time = end_time

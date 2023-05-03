@@ -13,14 +13,20 @@ class DataProcessing:
         self.laden_oeffnet = None
         self.laden_schliesst = None
         self.user_availability = None
+        self.binary_availability = None
+
 
     def run(self):
         """ Die einzelnen Methoden werden in der Reihe nach ausgeführt """
         self.get_availability()
         # Ausgabe user_availability
         print(f"User Availability: {self.user_availability}")
-        #self.get_opening_hours()
-        #self.binaere_liste()
+        # self.get_opening_hours()
+        # print(f"Opening Hours: {self.get_opening_hours}")
+        self.binaere_liste()
+        print(f"Binary Availability: {self.binary_availability}")
+
+
 
     def get_availability(self):
         """ In dieser Funktion wird user_id, date, start_time, end_time aus der Availability Entität gezogen
@@ -29,17 +35,28 @@ class DataProcessing:
         print(f"Admin mit der User_id: {self.current_user_id} hat den Solve Button gedrückt.")
 
         with app.app_context():
-            start_date = "2023-05-01"
-            end_date = "2023-05-07"
+            start_date = "2023-05-15"
+            end_date = "2023-05-21"
             
+            # Hole den company_name des aktuellen Benutzers
+            sql = text("""
+                SELECT company_name
+                FROM user
+                WHERE id = :current_user_id
+            """)
+            result = db.session.execute(sql, {"current_user_id": self.current_user_id})
+            company_name = result.fetchone()[0]
+            
+            # Verfügbarkeiten für alle Benutzer mit demselben company_name abrufen
             sql = text("""
                 SELECT a.user_id, a.date, a.start_time, a.end_time
                 FROM availability a
-                WHERE a.user_id = :current_user_id
+                JOIN user u ON a.user_id = u.id
+                WHERE u.company_name = :company_name
                 AND a.date BETWEEN :start_date AND :end_date
             """)
             # execute = rohe Mysql Abfrage.
-            result = db.session.execute(sql, {"current_user_id": self.current_user_id, "start_date": start_date, "end_date": end_date})
+            result = db.session.execute(sql, {"company_name": company_name, "start_date": start_date, "end_date": end_date})
             # fetchall = alle Zeilen der Datenbank werden abgerufen und in einem Tupel gespeichert
             times = result.fetchall()
 
@@ -52,50 +69,77 @@ class DataProcessing:
 
 
 
-
     def time_to_int_1(self, t):
         """ Die eingegebene Uhrzeit (hour, minute, second) wird in Stunden umgerechnet """
         return int((t.hour * 3600 + t.minute * 60 + t.second) / 3600)
+
+
 
     def time_to_int_2(self, t):
         """ Die eingegebene Uhrzeit (second) wird in Stunden umgerechnet """
         return int(t.seconds / 3600)
 
+
+
     def get_opening_hours(self):
+        """ In dieser Funktion werden die Öffnungszeiten der jeweiligen Company aus der Datenbank gezogen. """
         with app.app_context():
-            # Auch hier muss die user_id übereinstimmen!
-            sql = text("SELECT weekday, start_time, end_time FROM opening_hours")
-            # execute = rohe Mysql Abfrage.
+            # Abfrage, um den company_name des aktuellen Benutzers zu erhalten
+            sql = text("""
+                SELECT company_name
+                FROM user
+                WHERE id = :current_user_id
+            """)
             result = db.session.execute(sql, {"current_user_id": self.current_user_id})
-            # fetchall = alle Zeilen der Datenbank werden abgerufen und in einem Tupel gespeichert
+            company_name = result.fetchone()[0]
+
+            # Abfrage, um die Öffnungszeiten der Firma basierend auf dem company_name abzurufen
+            sql = text("""
+                SELECT weekday, start_time, end_time
+                FROM opening_hours
+                WHERE company_name = :company_name
+            """)
+            result = db.session.execute(sql, {"company_name": company_name})
             times = result.fetchall()
-        print("Ausgabe der Öffnungszeiten: ", times)
 
-        # Die nachfolgenden 2 Variablen sind sobald get_opening_hours funktioniert nicht mehr nötig
-        laden_oeffnet = time(hour=5, minute=0)
-        laden_schliesst = time(hour=18, minute=0)
-        opening_hours = self.time_to_int_1(laden_schliesst) - self.time_to_int_1(laden_oeffnet)
+        for weekday, start_time, end_time in times:
+            if not self.laden_oeffnet or start_time < self.laden_oeffnet:
+                self.laden_oeffnet = start_time
+            if not self.laden_schliesst or end_time > self.laden_schliesst:
+                self.laden_schliesst = end_time
 
-        self.opening_hours = opening_hours
-        self.laden_oeffnet = laden_oeffnet
-        self.laden_schliesst = laden_schliesst
+        if self.laden_oeffnet and self.laden_schliesst:
+            self.opening_hours = (self.laden_schliesst.hour * 60 + self.laden_schliesst.minute) - (self.laden_oeffnet.hour * 60 + self.laden_oeffnet.minute)
+
+
 
     def binaere_liste(self):
+        """ In dieser Funktion werden die zuvor erstellen user_availabilities in binäre Listen umgewandelt. """
 
-        uhrzeit1 = filtered_list[0][1]
-        uhrzeit2 = filtered_list[0][2]
-
-        # ----------------------------------------------------------------------------------------------------------------------
-
-        for outer_index, outside in enumerate(filtered_list):
-            for inner_index, inside in enumerate(outside):
-                if inside == 1:
-                    print("Position: (", outer_index, ",", inner_index, ")")
+        # Testwerte für Ladenöffnungszeiten!!
+        self.laden_oeffnet = time(hour=6)
+        self.laden_schliesst = time(hour=17)
+        self.opening_hours = (self.laden_schliesst.hour * 60 + self.laden_schliesst.minute) - (self.laden_oeffnet.hour * 60 + self.laden_oeffnet.minute)
 
 
-        ma_1 = [0] * opening_hours
+        # Generiert automatisch einen Standartwert für nicht vorhandene Schlüssel.
+        binary_availability = defaultdict(list)
 
-        for i in range(time_to_int_2(uhrzeit1) - time_to_int_1(laden_oeffnet),
-                       time_to_int_2(uhrzeit2) - time_to_int_1(laden_oeffnet)):
-            ma_1[i] = 1
-        return ma_1
+        for user_id, availabilities in self.user_availability.items():
+            for date, start_time, end_time in availabilities:
+                # Anzahl der Stunden Berechnen, in denen der Laden geöffnet ist
+                num_hours = self.opening_hours // 60
+
+                # Liste erstellen von Nullen mit der Länge der Anzahl der Stunden, in denen der Laden geöffnet ist
+                binary_list = [0] * num_hours
+
+                # Werte werden auf 1 gesetzt, wenn der MA Arbeiten kann.
+                start_hour = self.time_to_int_2(start_time) - self.time_to_int_1(self.laden_oeffnet)
+                end_hour = self.time_to_int_2(end_time) - self.time_to_int_1(self.laden_oeffnet)
+                for i in range(start_hour, end_hour):
+                    binary_list[i] = 1
+
+                binary_availability[user_id].append((date, binary_list))
+
+        self.binary_availability = binary_availability
+
