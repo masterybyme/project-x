@@ -94,7 +94,7 @@ class DataProcessing:
 
 
     def get_opening_hours(self):
-        """ In dieser Funktion werden die Öffnungszeiten der jeweiligen Company aus der Datenbank gezogen. """
+        """ in dieser Funktion werden die Öffnungszeiten der jeweiligen Company aus der Datenbank gezogen. """
         with app.app_context():
             # Abfrage, um den company_name des aktuellen Benutzers zu erhalten
             sql = text("""
