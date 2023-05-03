@@ -20,9 +20,8 @@ const Team = ({ users }) => {
     {
       field: "last_name",
       headerName: "Nachname",
-      type: "number",
-      headerAlign: "left",
-      align: "left",
+      flex: 1,
+      cellClassName: "name-column--cell",
     },
     {
       field: "company_name",
@@ -69,7 +68,7 @@ const Team = ({ users }) => {
 
   return (
     <Box m="20px">
-      <Header title="TEAM" subtitle="Managing the Team Members" />
+      <Header title="TEAM" subtitle="Übersicht von den Team Mitglieder" />
       <Box
         m="40px 0 0 0"
         height="75vh"
