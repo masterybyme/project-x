@@ -25,7 +25,7 @@ const Team = ({ users }) => {
       align: "left",
     },
     {
-      field: "copmany_name",
+      field: "company_name",
       headerName: "Firma",
       flex: 1,
     },
