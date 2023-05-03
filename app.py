@@ -1,6 +1,7 @@
 from flask import Flask, render_template, current_app, request, redirect, flash, url_for, abort, session, jsonify, send_from_directory
 from flask_login import LoginManager, current_user, logout_user, login_required, login_user
 from flask_mail import Mail, Message
+from flask_cors import CORS
 import datetime
 from datetime import timedelta
 from flask_migrate import Migrate
@@ -14,7 +15,7 @@ from models import db
 #----------------------------------------------------------------------------------
 
 app = Flask(__name__, template_folder='template')
-
+CORS(app)
 
 @app.route('/<path:path>')
 def serve_static_files(path):
@@ -244,24 +245,21 @@ def user():
 
 
 #React user 
-@app.route('/users')
+@app.route('/api/users')
 def get_data():
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM user')
-    data = cur.fetchall()
-    cur.close()
-    users = []
-    for user in data:
+    users = User.query.all()
+    user_list = []
+    for user in users:
         user_dict = {
-            'id': user[0],
-            'first_name': user[2],
-            'last_name': user[3],
-            'company_name': user[7],
-            'email': user[4],
-            'access_level': user[9],
+            'id': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'company_name': user.company_name,
+            'email': user.email,
+            'access_level': user.access_level
         }
-        users.append(user_dict)
-    return jsonify(users)
+        user_list.append(user_dict)
+    return jsonify(user_list)
 
 
 
@@ -690,7 +688,11 @@ def invite():
 
     return render_template('invite.html', template_form=data_form)
 
-
+'''
 if __name__ == '__main__':
     app.run(debug=True)
+'''
+
+if __name__ == "__main__":
+    app.run(debug=True, port=5000)
 

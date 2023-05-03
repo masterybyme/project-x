@@ -31,14 +31,15 @@ function App() {
   //Datafetch for User-Display in Team.jsx
   async function fetchData() {
     try {
-      const response = await axios.get("/users");
+      const response = await axios.get("http://localhost:5000/api/users");
       const data = response.data;
       setUsers(data);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching data:", error.response ? error.response : error);
       setMessage("An error occurred while fetching data.");
     }
   }
+  
 
   return (
     <ColorModeContext.Provider value={colorMode}>
