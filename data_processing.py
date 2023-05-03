@@ -1,6 +1,6 @@
 import pymysql
 from sqlalchemy import text
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from collections import defaultdict
 from app import app, db
 
@@ -21,10 +21,12 @@ class DataProcessing:
         self.get_availability()
         # Ausgabe user_availability
         print(f"User Availability: {self.user_availability}")
-        # self.get_opening_hours()
-        # print(f"Opening Hours: {self.get_opening_hours}")
-        self.binaere_liste()
-        print(f"Binary Availability: {self.binary_availability}")
+        self.get_opening_hours()
+        print(f"Laden öffnet: {self.laden_oeffnet}")
+        print(f"Laden schliesst: {self.laden_schliesst}")
+        print(f"Opening Hours: {self.opening_hours}")
+        # self.binaere_liste()
+        # print(f"Binary Availability: {self.binary_availability}")
 
 
 
@@ -35,8 +37,8 @@ class DataProcessing:
         print(f"Admin mit der User_id: {self.current_user_id} hat den Solve Button gedrückt.")
 
         with app.app_context():
-            start_date = "2023-05-15"
-            end_date = "2023-05-21"
+            start_date = "2023-05-01"
+            end_date = "2023-05-07"
             
             # Hole den company_name des aktuellen Benutzers
             sql = text("""
@@ -66,6 +68,16 @@ class DataProcessing:
                 user_availability[user_id].append((date, start_time, end_time))
 
             self.user_availability = user_availability
+
+
+    def time_to_int(self, t):
+        if isinstance(t, timedelta):
+            total_seconds = t.total_seconds()
+        elif isinstance(t, time):
+            total_seconds = t.hour * 3600 + t.minute * 60 + t.second
+        else:
+            raise ValueError("Invalid input type, must be datetime.timedelta or datetime.time")
+        return int(total_seconds / 3600)
 
 
 
@@ -98,18 +110,34 @@ class DataProcessing:
                 SELECT weekday, start_time, end_time
                 FROM opening_hours
                 WHERE company_name = :company_name
+                ORDER BY FIELD(weekday, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
             """)
             result = db.session.execute(sql, {"company_name": company_name})
             times = result.fetchall()
 
-        for weekday, start_time, end_time in times:
-            if not self.laden_oeffnet or start_time < self.laden_oeffnet:
-                self.laden_oeffnet = start_time
-            if not self.laden_schliesst or end_time > self.laden_schliesst:
-                self.laden_schliesst = end_time
+        # Initialisiere leere Listen für die Öffnungs- und Schließzeiten
+        self.laden_oeffnet = [None] * 7
+        self.laden_schliesst = [None] * 7
 
-        if self.laden_oeffnet and self.laden_schliesst:
-            self.opening_hours = (self.laden_schliesst.hour * 60 + self.laden_schliesst.minute) - (self.laden_oeffnet.hour * 60 + self.laden_oeffnet.minute)
+        # Ordne jedem Wochentag einen Index zu, um die Listen korrekt zu befüllen
+        weekday_indices = {
+            'Monday': 0,
+            'Tuesday': 1,
+            'Wednesday': 2,
+            'Thursday': 3,
+            'Friday': 4,
+            'Saturday': 5,
+            'Sunday': 6
+        }
+
+        for weekday, start_time, end_time in times:
+            index = weekday_indices[weekday]
+            self.laden_oeffnet[index] = start_time
+            self.laden_schliesst[index] = end_time
+
+        # Berechne die Öffnungszeiten für jeden Wochentag und speichere sie in einer Liste
+        self.opening_hours = [self.time_to_int(self.laden_schliesst[i]) - self.time_to_int(self.laden_oeffnet[i]) for i in range(7)]
+
 
 
 
@@ -120,7 +148,7 @@ class DataProcessing:
         self.laden_oeffnet = time(hour=6)
         self.laden_schliesst = time(hour=17)
         self.opening_hours = (self.laden_schliesst.hour * 60 + self.laden_schliesst.minute) - (self.laden_oeffnet.hour * 60 + self.laden_oeffnet.minute)
-
+        
 
         # Generiert automatisch einen Standartwert für nicht vorhandene Schlüssel.
         binary_availability = defaultdict(list)
