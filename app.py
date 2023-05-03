@@ -116,10 +116,9 @@ def homepage():
 @app.route('/registration', methods = ['GET', 'POST'])
 def registration():   
     data_form = EmployeeForm(csrf_enabled=False)
-    if data_form.is_submitted() and data_form.validate():
+    if request.method =='POST':
         token = RegistrationToken.query.filter_by(token=data_form.token.data, email=data_form.email.data).first()
         if token is None:
-            print("token")
             flash('Token does not exist. Please check your Confirmation Mail.')
             return redirect(url_for('registration'))
         else:
@@ -127,14 +126,12 @@ def registration():
             last = User.query.order_by(User.id.desc()).first()
             hash = generate_password_hash(data_form.password.data)
             if last is None:
-                print("last")
                 new_id = 1000
             else:
                 new_id = last.id + 1
 
             last_company_id = User.query.filter_by(company_name=data_form.company_name.data).order_by(User.company_id.desc()).first()
             if last_company_id is None:
-                print("comp")
                 new_company_id = 1000
             else:
                 new_company_id = last_company_id + 1
@@ -144,7 +141,6 @@ def registration():
                         company_name = token.company_name, department = token.department,
                         access_level = token.access_level, email = token.email, password = hash,
                         created_by = new_company_id, changed_by = new_company_id, creation_timestamp = creation_date)
-            print(data)
 
             try:
                 db.session.add(data)
@@ -153,7 +149,6 @@ def registration():
                 return redirect(url_for('login'))
             except:
                 db.session.rollback()
-                print("end")
                 flash('Error occured - Your mail might be already in use :(')
                 return redirect(url_for('registration'))
     
@@ -173,7 +168,7 @@ def admin_registration():
         else:
             new_id = last.id + 1
 
-        last_company_id = User.query.filter_by(company_name=data_form.company_name.data).order_by(User.company_id.desc()).first()
+        last_company_id = User.query.filter_by(company_name=data_form.company_name.data).order_by(User.company_id.desc()).first().company_id
         if last_company_id is None:
             new_company_id = 1000
         else:
@@ -211,7 +206,7 @@ def login():
         if user and check_password_hash(user.password, login_form.password.data):
             flash('Successfully logged in')
             #return redirect(url_for('react_dashboard'))
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('user'))
         else:
             flash('Please try again')
             return render_template('login.html', template_form=login_form)
