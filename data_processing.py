@@ -1,8 +1,8 @@
 import pymysql
 from sqlalchemy import text
-from datetime import datetime, time, timedelta
+from datetime import datetime, time
 from collections import defaultdict
-from app import app, db
+from app import app, db, timedelta
 
 
 class DataProcessing:
@@ -25,8 +25,8 @@ class DataProcessing:
         print(f"Laden öffnet: {self.laden_oeffnet}")
         print(f"Laden schliesst: {self.laden_schliesst}")
         print(f"Opening Hours: {self.opening_hours}")
-        # self.binaere_liste()
-        # print(f"Binary Availability: {self.binary_availability}")
+        self.binaere_liste()
+        print(f"Binary Availability: {self.binary_availability}")
 
 
 
@@ -82,8 +82,10 @@ class DataProcessing:
 
 
     def time_to_int_1(self, t):
-        """ Die eingegebene Uhrzeit (hour, minute, second) wird in Stunden umgerechnet """
-        return int((t.hour * 3600 + t.minute * 60 + t.second) / 3600)
+        if isinstance(t, timedelta):
+            return int((t.seconds) / 3600)
+        else:
+            return int((t.hour * 3600 + t.minute * 60 + t.second) / 3600)
 
 
 
@@ -94,7 +96,7 @@ class DataProcessing:
 
 
     def get_opening_hours(self):
-        """ in dieser Funktion werden die Öffnungszeiten der jeweiligen Company aus der Datenbank gezogen. """
+        """ In dieser Funktion werden die Öffnungszeiten (7 Tage) der jeweiligen Company aus der Datenbank gezogen. """
         with app.app_context():
             # Abfrage, um den company_name des aktuellen Benutzers zu erhalten
             sql = text("""
@@ -102,6 +104,7 @@ class DataProcessing:
                 FROM user
                 WHERE id = :current_user_id
             """)
+            # current_user_id ist nur ein Platzhalter, welcher im Dict nachfolgend ersetzt wird (erhöht die Sicherheit)
             result = db.session.execute(sql, {"current_user_id": self.current_user_id})
             company_name = result.fetchone()[0]
 
@@ -140,34 +143,33 @@ class DataProcessing:
 
 
 
-
     def binaere_liste(self):
-        """ In dieser Funktion werden die zuvor erstellen user_availabilities in binäre Listen umgewandelt. """
+        """ In dieser Funktion werden die zuvor erstellten user_availabilities in binäre Listen umgewandelt. """
 
-        # Testwerte für Ladenöffnungszeiten!!
-        self.laden_oeffnet = time(hour=6)
-        self.laden_schliesst = time(hour=17)
-        self.opening_hours = (self.laden_schliesst.hour * 60 + self.laden_schliesst.minute) - (self.laden_oeffnet.hour * 60 + self.laden_oeffnet.minute)
-        
-
-        # Generiert automatisch einen Standartwert für nicht vorhandene Schlüssel.
+        # Generiert automatisch einen Standardwert für nicht vorhandene Schlüssel.
         binary_availability = defaultdict(list)
 
         for user_id, availabilities in self.user_availability.items():
             for date, start_time, end_time in availabilities:
-                # Anzahl der Stunden Berechnen, in denen der Laden geöffnet ist
-                num_hours = self.opening_hours // 60
+                # Wochentag als Index (0 = Montag, 1 = Dienstag, usw.) erhalten
+                weekday_index = date.weekday()
+
+                # Anzahl der Stunden berechnen, in denen der Laden geöffnet ist
+                num_hours = self.opening_hours[weekday_index]
 
                 # Liste erstellen von Nullen mit der Länge der Anzahl der Stunden, in denen der Laden geöffnet ist
                 binary_list = [0] * num_hours
 
-                # Werte werden auf 1 gesetzt, wenn der MA Arbeiten kann.
-                start_hour = self.time_to_int_2(start_time) - self.time_to_int_1(self.laden_oeffnet)
-                end_hour = self.time_to_int_2(end_time) - self.time_to_int_1(self.laden_oeffnet)
+                # Werte werden auf 1 gesetzt, wenn der Mitarbeiter arbeiten kann.
+                start_hour = self.time_to_int_2(start_time) - self.time_to_int_1(self.laden_oeffnet[weekday_index])
+                end_hour = self.time_to_int_2(end_time) - self.time_to_int_1(self.laden_oeffnet[weekday_index])
                 for i in range(start_hour, end_hour):
-                    binary_list[i] = 1
+                    if 0 <= i < len(binary_list):
+                        binary_list[i] = 1
 
                 binary_availability[user_id].append((date, binary_list))
 
         self.binary_availability = binary_availability
+
+
 
