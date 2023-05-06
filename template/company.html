@@ -1,10 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'user_frame.html' %}
 
-</body>
+{% block content %}
+
+
+<html>
+     <head>
+        <meta charset="UTF-8">
+        <title>Company</title>
+    </head>
+    <body>
+     {% for message in get_flashed_messages() %}
+        {{ message }}
+     {% endfor %}
+        <h1>Time Table</h1>
+
+        <strong>Below you'll find the current opening hours.
+        For Updating just change the times.</strong>
+     <p></p>
+
+        <form action= '/company' method = 'POST' class='CompanyForm'>
+            {{ template_form.hidden_tag() }}
+
+            <TABLE>
+            <thead>
+                <TR>
+                    <TH RIGHT='100' WIDTH='100' ALIGN="LEFT">Weekday</TH>
+                    <TH RIGHT='100' WIDTH='90' ALIGN="CENTER">Start Time</TH>
+                    <TH RIGHT='100' WIDTH='90' ALIGN="CENTER">End Time</TH>
+                </TR>
+            </thead>
+            <TBODY>
+                {% for i in range(day_num) %}
+                <TR>
+                    <TD>
+                        {{ weekdays[i] }}
+                    </TD>
+                    {% for vari in range(2) %}
+                    <TD RIGHT='100' ALIGN="CENTER">
+                        {% set new_i = i + 1 %}
+                        {% set time_value = new_i ~ '&' ~ vari %}
+                        {% if time_value in temp_dict %}
+                            <input type='time' name='day_{{ i }}_{{ vari }}' value='{{ temp_dict[time_value] }}' style='width: 70px'>
+                        {% else %}
+                            <input type='time' name='day_{{ i }}_{{ vari }}' value='00:00' style='width: 70px'>
+                        {% endif %}
+                    </TD>
+                    {% endfor %}
+                </TR>
+                {% endfor %}
+            </TBODY>
+
+        </TABLE>
+            <p>{{ template_form.update() }}</p>
+
+            <p></p>
+            <p></p>
+            <p></p>
+        </form>
+
+    </body>
+
 </html>
+{% endblock content %}

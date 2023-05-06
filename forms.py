@@ -25,6 +25,15 @@ class EmployeeForm(FlaskForm):
 
 
 
+class CompanyForm(FlaskForm):
+    id = IntegerField("Id", validators=[DataRequired()])
+    company_name = StringField("Company Name", validators=[DataRequired()])
+    weekly_hours = IntegerField("Weekly Hours", validators=[DataRequired()])
+    shift = IntegerField("Shift", validators=[DataRequired()])
+    update = SubmitField("Update")
+
+
+
 class PlanningForm(FlaskForm):
     id = IntegerField("Id", validators=[DataRequired()])
     days = RadioField('Working Days', choices=[('value', 'Monday'), ('value_two', 'Tuesday'),

@@ -86,7 +86,7 @@ def user_required(f):
 #Import of Forms
 #--------------------------------------------------------------------------------
 
-from forms import EmployeeForm, PlanningForm, UpdateForm, TimeReqForm, InviteForm, SolveForm
+from forms import EmployeeForm, PlanningForm, UpdateForm, TimeReqForm, InviteForm, SolveForm, CompanyForm
 
 
 #Import of Database
@@ -117,29 +117,77 @@ def homepage():
 def registration():   
     data_form = EmployeeForm(csrf_enabled=False)
     if request.method =='POST':
-        token = RegistrationToken.query.filter_by(token=data_form.token.data, email=data_form.email.data).first()
-        if token is None:
-            flash('Token does not exist. Please check your Confirmation Mail.')
-            return redirect(url_for('registration'))
+        if data_form.password.data != data_form.password2.data:
+            flash("Wrong Password")
+            return render_template('token_registration.html', data_tag=User.query.all(), template_form=data_form)
+        else:
+            token = RegistrationToken.query.filter_by(token=data_form.token.data, email=data_form.email.data).first()
+            if token is None:
+                flash('Token does not exist. Please check your Confirmation Mail.')
+                return redirect(url_for('registration'))
+            else:
+                creation_date = datetime.datetime.now()
+                last = User.query.order_by(User.id.desc()).first()
+                hash = generate_password_hash(data_form.password.data)
+                if last is None:
+                    new_id = 10000
+                else:
+                    new_id = last.id + 1
+
+                last_company_id = User.query.filter_by(company_name=token.company_name).order_by(User.company_id.desc()).first()
+                if last_company_id is None:
+                    new_company_id = 1000
+                else:
+                    new_company_id = last_company_id + 1
+
+                data = User(id = new_id, company_id = new_company_id, first_name = data_form.first_name.data,
+                            last_name = data_form.last_name.data, employment_level = token.employment_level,
+                            company_name = token.company_name, department = token.department,
+                            access_level = token.access_level, email = token.email, password = hash,
+                            created_by = new_company_id, changed_by = new_company_id, creation_timestamp = creation_date)
+
+                try:
+                    db.session.add(data)
+                    db.session.commit()
+                    print(data_form.password.data)
+                    print(data_form.password2.data)
+                    flash('Registration successful submitted')
+                    return redirect(url_for('login'))
+                except:
+                    db.session.rollback()
+                    flash('Error occured - Your mail might be already in use :(')
+                    return redirect(url_for('registration'))
+    
+    return render_template('token_registration.html', data_tag=User.query.all(), template_form=data_form)
+
+
+
+@app.route('/registration/admin', methods = ['GET', 'POST'])
+def admin_registration():   
+    data_form = EmployeeForm(csrf_enabled=False)
+    if request.method =='POST':
+        if data_form.password.data != data_form.password2.data:
+            flash("Wrong Password")
+            return render_template('token_registration.html', data_tag=User.query.all(), template_form=data_form)
         else:
             creation_date = datetime.datetime.now()
             last = User.query.order_by(User.id.desc()).first()
             hash = generate_password_hash(data_form.password.data)
             if last is None:
-                new_id = 1000
+                new_id = 10000
             else:
                 new_id = last.id + 1
 
-            last_company_id = User.query.filter_by(company_name=data_form.company_name.data).order_by(User.company_id.desc()).first()
+            last_company_id = User.query.filter_by(company_name=data_form.company_name.data).order_by(User.company_id.desc()).first().company_id
             if last_company_id is None:
                 new_company_id = 1000
             else:
                 new_company_id = last_company_id + 1
 
             data = User(id = new_id, company_id = new_company_id, first_name = data_form.first_name.data,
-                        last_name = data_form.last_name.data, employment_level = token.employment_level,
-                        company_name = token.company_name, department = token.department,
-                        access_level = token.access_level, email = token.email, password = hash,
+                        last_name = data_form.last_name.data, employment_level = data_form.employment_level.data,
+                        company_name = data_form.company_name.data, department = data_form.department.data,
+                        access_level = data_form.access_level.data, email = data_form.email.data, password = hash,
                         created_by = new_company_id, changed_by = new_company_id, creation_timestamp = creation_date)
 
             try:
@@ -151,44 +199,6 @@ def registration():
                 db.session.rollback()
                 flash('Error occured - Your mail might be already in use :(')
                 return redirect(url_for('registration'))
-    
-    return render_template('token_registration.html', data_tag=User.query.all(), template_form=data_form)
-
-
-
-@app.route('/registration/admin', methods = ['GET', 'POST'])
-def admin_registration():   
-    data_form = EmployeeForm(csrf_enabled=False)
-    if request.method =='POST':
-        creation_date = datetime.datetime.now()
-        last = User.query.order_by(User.id.desc()).first()
-        hash = generate_password_hash(data_form.password.data)
-        if last is None:
-            new_id = 1000
-        else:
-            new_id = last.id + 1
-
-        last_company_id = User.query.filter_by(company_name=data_form.company_name.data).order_by(User.company_id.desc()).first().company_id
-        if last_company_id is None:
-            new_company_id = 1000
-        else:
-            new_company_id = last_company_id + 1
-
-        data = User(id = new_id, company_id = new_company_id, first_name = data_form.first_name.data,
-                    last_name = data_form.last_name.data, employment_level = data_form.employment_level.data,
-                    company_name = data_form.company_name.data, department = data_form.department.data,
-                    access_level = data_form.access_level.data, email = data_form.email.data, password = hash,
-                    created_by = new_company_id, changed_by = new_company_id, creation_timestamp = creation_date)
-
-        try:
-            db.session.add(data)
-            db.session.commit()
-            flash('Registration successful submitted')
-            return redirect(url_for('login'))
-        except:
-            db.session.rollback()
-            flash('Error occured - Your mail might be already in use :(')
-            return redirect(url_for('registration'))
     
     return render_template('registration.html', data_tag=User.query.all(), template_form=data_form)
 
@@ -238,7 +248,7 @@ def user():
                            account=account, template_form=user_form)
 
 
-#React Teammember Overview 
+#React user 
 @app.route('/api/users')
 def get_data():
     users = User.query.all()
@@ -254,41 +264,6 @@ def get_data():
         }
         user_list.append(user_dict)
     return jsonify(user_list)
-
-#React Create User
-@app.route('/api/users/register', methods=['POST'])
-def register_user():
-    data = request.json
-    token = RegistrationToken.query.filter_by(token=data['token'], email=data['email']).first()
-    if token is None:
-        return jsonify({'message': 'Token does not exist. Please check your Confirmation Mail.'}), 400
-    else:
-        creation_date = datetime.datetime.now()
-        last = User.query.order_by(User.id.desc()).first()
-        hash = generate_password_hash(data['password'])
-        if last is None:
-            new_id = 1000
-        else:
-            new_id = last.id + 1
-
-        last_company_id = User.query.filter_by(company_name=token.company_name).order_by(User.company_id.desc()).first()
-        if last_company_id is None:
-            new_company_id = 1000
-        else:
-            new_company_id = last_company_id.company_id + 1
-
-        user = User(id=new_id, company_id=new_company_id, first_name=data['firstName'], last_name=data['lastName'], email=token.email,
-                    password=hash, employment_level=token.employment_level, company_name=token.company_name,
-                    department=token.department, access_level=token.access_level, created_by=new_company_id,
-                    changed_by=new_company_id, creation_timestamp=creation_date)
-
-        try:
-            db.session.add(user)
-            db.session.commit()
-            return jsonify({'message': 'Registration successful submitted'}), 200
-        except:
-            db.session.rollback()
-            return jsonify({'message': 'Error occurred - Your email might be already in use :('}), 500
 
 
 
@@ -380,7 +355,7 @@ def planning():
             if entry1:
                 last = Availability.query.order_by(Availability.id.desc()).first()
                 if last is None:
-                    new_id = 1000
+                    new_id = 1
                 else:
                     new_id = last.id + 1
                 new_date = monday + datetime.timedelta(days=i) + datetime.timedelta(days=week_adjustment)
@@ -422,7 +397,7 @@ def planning():
             if entry1:
                 last = TemplateAvailability.query.order_by(TemplateAvailability.id.desc()).first()
                 if last is None:
-                    new_id = 1000
+                    new_id = 1
                 else:
                     new_id = last.id + 1
                 new_name = planning_form.template_name.data
@@ -537,7 +512,7 @@ def admin():
                 if capacity:
                     last = TimeReq.query.order_by(TimeReq.id.desc()).first()
                     if last is None:
-                        new_id = 1000
+                        new_id = 1
                     else:
                         new_id = last.id + 1
                     new_date = monday + datetime.timedelta(days=i)
@@ -561,7 +536,7 @@ def admin():
                 if capacity:
                     last = TemplateTimeRequirement.query.order_by(TemplateTimeRequirement.id.desc()).first()
                     if last is None:
-                        new_id = 1000
+                        new_id = 1
                     else:
                         new_id = last.id + 1
                     new_name = time_form.template_name.data
@@ -621,14 +596,14 @@ def dashboard():
     return render_template('dashboard.html', data_tag=User.query.all(), open_tag=OpeningHours.query.all())
 
 
-@app.route('/opening', methods = ['GET', 'POST'])
+@app.route('/company', methods = ['GET', 'POST'])
 @admin_required
-def opening():
+def company_data():
     opening_hour = OpeningHours.query.all()
     creation_date = datetime.datetime.now()
     weekdays = {0:'Monday', 1:'Tuesday', 2:'Wednesday', 3:'Thursday', 4:'Friday', 5:'Saturday', 6:'Sunday'}
     day_num = 7
-    opening_form = UpdateForm(csrf_enabled = False, obj=opening_hour)
+    company_form = CompanyForm(csrf_enabled = False, obj=opening_hour)
     company_id = current_user.company_id
 
     temp_dict = {}
@@ -642,14 +617,14 @@ def opening():
             temp_dict[str(new_i) + '&1'] = temp.end_time
 
     #Save Opening
-    if request.method == 'POST' and 'submit' in request.form:
+    if request.method == 'POST':
         for i in range(day_num):
             entry1 = request.form.get(f'day_{i}_0')
             entry2 = request.form.get(f'day_{i}_1')
             if entry1:
                 last = OpeningHours.query.order_by(OpeningHours.id.desc()).first()
                 if last is None:
-                    new_id = 1000
+                    new_id = 1
                 else:
                     new_id = last.id + 1
                 try:
@@ -670,7 +645,7 @@ def opening():
                 db.session.commit()
 
     #Update Opening Hour - still not working
-    if opening_form.update.data:
+    if company_form.update.data:
         try:
             for i in range(day_num):
                 new_opening = OpeningHours.query.filter_by(id=i+1).first()
@@ -682,13 +657,13 @@ def opening():
                 new_opening.end_time = new_end_time
                 db.session.commit()
                 flash('Update successful submitted')
-                return redirect(url_for('opening'))
+                return redirect(url_for('company'))
         except:
             db.session.rollback()
             flash('Error occured :(')
-            return redirect(url_for('opening'))
+            return redirect(url_for('company'))
 
-    return render_template('opening.html', template_form=opening_form, weekdays=weekdays, day_num=day_num, temp_dict=temp_dict)
+    return render_template('company.html', template_form=company_form, weekdays=weekdays, day_num=day_num, temp_dict=temp_dict)
 
 
 @app.route('/invite', methods = ['GET', 'POST'])
@@ -696,6 +671,7 @@ def opening():
 def invite():
     data_form = InviteForm(csrf_enabled=False)
     company_id = current_user.company_id
+    company = current_user.company_name
     if request.method == 'POST':
         random_token = random.randint(100000,999999)
         last = RegistrationToken.query.order_by(RegistrationToken.id.desc()).first()
@@ -715,7 +691,7 @@ def invite():
         
 
 
-    return render_template('invite.html', template_form=data_form)
+    return render_template('invite.html', template_form=data_form, company=company)
 
 '''
 if __name__ == '__main__':

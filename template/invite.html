@@ -1,4 +1,4 @@
-{% extends 'frame.html' %}
+{% extends 'user_frame.html' %}
 
 {% block content %}
 
@@ -31,7 +31,7 @@
                         {{ template_form.company_name.label }}
                     </TD>
                     <TD WIDTH="300">
-                        {{ template_form.company_name() }}
+                        {{ template_form.company_name(value=company) }}
                     </TD>
                 </TR>
                 <TR>
