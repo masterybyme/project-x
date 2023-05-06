@@ -14,29 +14,66 @@
      {% endfor %}
         <h1>Time Table</h1>
 
-        <strong>Below you'll find the current opening hours.
-        For Updating just change the times.</strong>
+        <strong>Please update your company data whenever necessary. This are the basics for your optimized Scheduler.</strong>
      <p></p>
 
-        <form action= '/company' method = 'POST' class='CompanyForm'>
+        <form action= '/company' method = 'POST' class='CompanyForm' LEFT='100'>
             {{ template_form.hidden_tag() }}
-
+            <h2>Company Information</h2>
             <TABLE>
+                <thead>
+                    <TR>
+                        <TH WIDTH='120' ALIGN="LEFT"></TH>
+                        <TH WIDTH='70' ALIGN="LEFT"></TH>
+                    </TR>
+                </thead>
+                <TBODY>
+                    <TR>
+                        <TD WIDTH='100' ALIGN="LEFT">
+                            {{ template_form.company_name.label}}
+                        </TD>
+                        <TD WIDTH='70' ALIGN="LEFT">
+                            {{ template_form.company_name(value=company_name) }}
+                        </TD>
+                    </TR>
+                    <TR>
+                        <TD WIDTH='100' ALIGN="LEFT">
+                            {{ template_form.weekly_hours.label}}
+                        </TD>
+                        <TD WIDTH='70' ALIGN="LEFT">
+                            {{ template_form.weekly_hours(value=weekly_hours) }}
+                        </TD>
+                    </TR>
+                    <TR>
+                        <TD WIDTH='100' ALIGN="LEFT">
+                            {{ template_form.shift.label}}
+                        </TD>
+                        <TD WIDTH='70' ALIGN="LEFT">
+                            {{ template_form.shift(value=shift) }}
+                        </TD>
+                    </TR>
+                </TBODY>
+            </TABLE>
+
+            <br>
+
+            <h2>Opening Hours</h2>
+            <TABLE >
             <thead>
                 <TR>
-                    <TH RIGHT='100' WIDTH='100' ALIGN="LEFT">Weekday</TH>
-                    <TH RIGHT='100' WIDTH='90' ALIGN="CENTER">Start Time</TH>
-                    <TH RIGHT='100' WIDTH='90' ALIGN="CENTER">End Time</TH>
+                    <TH WIDTH='100' ALIGN="LEFT">Weekday</TH>
+                    <TH WIDTH='90' ALIGN="CENTER">Start Time</TH>
+                    <TH WIDTH='90' ALIGN="CENTER">End Time</TH>
                 </TR>
             </thead>
             <TBODY>
-                {% for i in range(day_num) %}
                 <TR>
+                    {% for i in range(day_num) %}
                     <TD>
                         {{ weekdays[i] }}
                     </TD>
                     {% for vari in range(2) %}
-                    <TD RIGHT='100' ALIGN="CENTER">
+                    <TD ALIGN="CENTER">
                         {% set new_i = i + 1 %}
                         {% set time_value = new_i ~ '&' ~ vari %}
                         {% if time_value in temp_dict %}

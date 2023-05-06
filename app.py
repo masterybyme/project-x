@@ -605,6 +605,16 @@ def company_data():
     day_num = 7
     company_form = CompanyForm(csrf_enabled = False, obj=opening_hour)
     company_id = current_user.company_id
+    company_name = current_user.company_name
+    company = Company.query.all()
+
+    if Company.query.filter_by(company_name=company_name).first() is None:
+        shift = ''
+        weekly_hour = ''
+    else:
+        shift = company.shifts
+        weekly_hour = company.weekly_hours
+   
 
     temp_dict = {}
     for i in range(day_num):
@@ -616,7 +626,7 @@ def company_data():
             temp_dict[str(new_i) + '&0'] = temp.start_time
             temp_dict[str(new_i) + '&1'] = temp.end_time
 
-    #Save Opening
+    #Save Company Data
     if request.method == 'POST':
         for i in range(day_num):
             entry1 = request.form.get(f'day_{i}_0')
@@ -636,13 +646,21 @@ def company_data():
                 new_weekday = weekdays[i]
 
 
-                data = OpeningHours(id=new_id, company_name=current_user.company_name, weekday=new_weekday, start_time=new_entry1,
+                opening = OpeningHours(id=new_id, company_name=current_user.company_name, weekday=new_weekday, start_time=new_entry1,
                                     end_time=new_entry2, created_by=company_id, changed_by=company_id,
                                     creation_timestamp = creation_date)
+                company_no = Company.query.order_by(Company.id.desc()).first()
+                if company_no is None:
+                    new_company_no = 1
+                else:
+                    new_company_no = last.id + 1
+                company_data = Company(id=new_company_no ,company_name=data_form.company_name.data, weekly_hours=data_form.weekly_hours.data, shifts=data_form.shifts.data,
+                                created_by=company_id, changed_by=company_id, creation_timestamp = creation_date)
 
 
-                db.session.add(data)
-                db.session.commit()
+                    db.session.add(opening)
+                    db.session.add(company_data)
+                    db.session.commit()
 
     #Update Opening Hour - still not working
     if company_form.update.data:
@@ -663,7 +681,7 @@ def company_data():
             flash('Error occured :(')
             return redirect(url_for('company'))
 
-    return render_template('company.html', template_form=company_form, weekdays=weekdays, day_num=day_num, temp_dict=temp_dict)
+    return render_template('company.html', template_form=company_form, weekdays=weekdays, day_num=day_num, temp_dict=temp_dict, company_name=company_name, shift=shift, weekly_hours=weekly_hour)
 
 
 @app.route('/invite', methods = ['GET', 'POST'])
