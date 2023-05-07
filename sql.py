@@ -10,9 +10,9 @@ mydb = mysql.connector.connect(
     database = 'projectx')
 mycursor = mydb.cursor()
 
-delete_table = 'DROP TABLE opening_hours'
+delete_table = 'DROP TABLE time_req'
 #delete_db = 'DROP DATABASE projectx'
-#delete_table_entries = 'TRUNCATE TABLE User'
+#delete_table_entries = 'TRUNCATE TABLE opening_hours'
 #create_db = 'CREATE DATABASE IF NOT EXISTS projectx'
 #create_table = 'CREATE TABLE RegistrationToken'
 

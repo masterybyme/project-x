@@ -305,6 +305,21 @@ def planning():
     planning_form = PlanningForm(csrf_enabled = False)
 
 
+    temp_dict = {}
+    for i in range(day_num):
+        temp = Availability.query.filter_by(email=user.email, weekday=weekdays[i]).first()
+        if temp is None:
+            pass
+        else:
+            new_i = i + 1
+            temp_dict[str(new_i) + '&0'] = temp.start_time
+            temp_dict[str(new_i) + '&1'] = temp.end_time
+            temp_dict[str(new_i) + '&2'] = temp.start_time2
+            temp_dict[str(new_i) + '&3'] = temp.end_time2
+            temp_dict[str(new_i) + '&4'] = temp.start_time3
+            temp_dict[str(new_i) + '&5'] = temp.end_time3
+
+
     if planning_form.prev_week.data:
         week_adjustment -=7
         session['week_adjustment'] = week_adjustment
@@ -321,7 +336,7 @@ def planning():
         monday = monday + datetime.timedelta(days=week_adjustment)
 
         return render_template('planning.html', template_form=planning_form, monday=monday, weekdays=weekdays,
-                               day_num=day_num)
+                               day_num=day_num, temp_dict=temp_dict)
 
     #Set Template
     if planning_form.template1.data:
@@ -423,7 +438,7 @@ def planning():
     pass
 
     return render_template('planning.html', template_form=planning_form, monday=monday, weekdays=weekdays,
-                           day_num=day_num)
+                           day_num=day_num, temp_dict=temp_dict)
 
 
 @app.route('/delete_availability/<int:id>')
@@ -457,6 +472,7 @@ def delete(id):
 @admin_required
 def admin():
     time_form = TimeReqForm(csrf_enbled=False)
+    solve_form = SolveForm(csrf_enbled=False)
     Time = TimeReq.query.all()
     creation_date = datetime.datetime.now()
     weekdays = {0: 'Monday', 1: 'Tuesday', 2: 'Wednesday', 3: 'Thursday', 4: 'Friday', 5: 'Saturday', 6: 'Sunday'}
@@ -467,6 +483,24 @@ def admin():
     user = User.query.get(current_user.id)
     company_id = current_user.company_id
 
+
+    timereq_dict = {}
+    for i in range(day_num):
+        for hour in range(24):
+            new_date = monday + datetime.timedelta(days=i)
+            time_num = hour * 100
+            time = f'{time_num:04d}'
+            new_time = datetime.datetime.strptime(time, '%H%M').time()
+            temp = TimeReq.query.filter_by(company_name=current_user.company_name, date=new_date, start_time=new_time).first()
+            if temp is None:
+                pass
+            else:
+                new_i = i + 1
+                timereq_dict[str(new_i) + str(hour)] = temp.worker
+    
+    print(timereq_dict)
+
+
     #Prev Week
     if time_form.prev_week.data:
         week_adjustment -=7
@@ -474,8 +508,8 @@ def admin():
 
         monday = monday + datetime.timedelta(days=week_adjustment)
 
-        return render_template('admin.html', template_form=time_form, timedelta=timedelta, monday=monday,
-                               Time=Time, weekdays=weekdays, day_num=day_num)
+        return render_template('admin.html', template_form=time_form, solve_form=solve_form, timedelta=timedelta, monday=monday,
+                               Time=Time, weekdays=weekdays, day_num=day_num, timereq_dict=timereq_dict)
     #Next Week
     if time_form.next_week.data:
         week_adjustment +=7
@@ -483,8 +517,10 @@ def admin():
 
         monday = monday + datetime.timedelta(days=week_adjustment)
 
-        return render_template('admin.html', template_form=time_form, timedelta=timedelta, monday=monday,
-                               Time=Time, weekdays=weekdays, day_num=day_num)
+        return render_template('admin.html', template_form=time_form, solve_form=solve_form, timedelta=timedelta, monday=monday,
+                               Time=Time, weekdays=weekdays, day_num=day_num, timereq_dict=timereq_dict)
+    
+    
 
     # Set Template
     if time_form.template1.data:
@@ -501,8 +537,8 @@ def admin():
                     new_i = i + 1
                     temp_dict[str(new_i) + '&' + str(hour)] = temp.worker
 
-        return render_template('admin.html', template_form=time_form, timedelta=timedelta, monday=monday,
-                               weekdays=weekdays, day_num=day_num, temp_dict=temp_dict)
+        return render_template('admin.html', template_form=time_form, solve_form=solve_form, timedelta=timedelta, monday=monday,
+                               weekdays=weekdays, day_num=day_num, temp_dict=temp_dict, timereq_dict=timereq_dict)
 
     #Submit the required FTE per hour
     if request.method == 'POST' and 'submit' in request.form:
@@ -520,12 +556,15 @@ def admin():
                     time = f'{time_num:04d}'
                     new_time = datetime.datetime.strptime(time, '%H%M').time()
 
-                    req = TimeReq(id=new_id, date=new_date, start_time=new_time, worker=capacity, created_by=company_id,
+                    TimeReq.query.filter_by(company_name=current_user.company_name, date=new_date, start_time=new_time).delete()
+                    db.session.commit()
+
+                    req = TimeReq(id=new_id, company_name=current_user.company_name, date=new_date, start_time=new_time, worker=capacity, created_by=company_id,
                                   changed_by=company_id, creation_timestamp = creation_date)
 
                     db.session.add(req)
                     db.session.commit()
-        return render_template('admin.html', monday=monday, timedelta=timedelta, day_num=day_num, template_form=time_form)
+        return render_template('admin.html', monday=monday, timedelta=timedelta, day_num=day_num, template_form=time_form, solve_form=solve_form, timereq_dict=timereq_dict)
 
     # Save templates
     if request.method == 'POST' and 'template' in request.form:
@@ -553,8 +592,7 @@ def admin():
                     db.session.add(data)
                     db.session.commit()
 
-    #Update TimeReq - Still not working
-    pass
+    
 
     #Remove entries of single dates
     if request.method == 'POST' and 'remove' in request.form:
@@ -567,23 +605,22 @@ def admin():
 
         db.session.commit()
         flash('Successful')
-        return render_template('admin.html', monday=monday, timedelta=timedelta, day_num=day_num, Time=Time, template_form=time_form)
+        return render_template('admin.html', monday=monday, timedelta=timedelta, day_num=day_num, Time=Time, solve_form=solve_form, template_form=time_form, timereq_dict=timereq_dict)
 
 
 
     # Solve Button, erstellt 13.04.23 von Gery
-    solve_form = SolveForm()
     if solve_form.solve_button.data:
         from data_processing import DataProcessing
         # Damit der Code threadsafe ist, wird jedesmal eine neue Instanz erstellt pro Anfrage!
         dp = DataProcessing(current_user.id)
         dp.run()
         return render_template('admin.html', template_form=time_form, timedelta=timedelta, monday=monday,
-                               Time=Time, weekdays=weekdays, day_num=day_num, solve_form=solve_form)
+                               Time=Time, weekdays=weekdays, day_num=day_num, solve_form=solve_form, timereq_dict=timereq_dict)
 
 
-    return render_template('admin.html', monday=monday, timedelta=timedelta, day_num=day_num, Time=Time,
-                           template_form=time_form, solve_form=solve_form)
+    return render_template('admin.html', monday=monday, timedelta=timedelta, day_num=day_num, Time=Time, solve_form=solve_form,
+                           template_form=time_form, timereq_dict=timereq_dict)
 
 
 
@@ -606,12 +643,13 @@ def company_data():
     company_form = CompanyForm(csrf_enabled = False, obj=opening_hour)
     company_id = current_user.company_id
     company_name = current_user.company_name
-    company = Company.query.all()
+    company = Company.query.filter_by(company_name=company_name).first()
 
-    if Company.query.filter_by(company_name=company_name).first() is None:
+    if company is None:
         shift = ''
         weekly_hour = ''
     else:
+
         shift = company.shifts
         weekly_hour = company.weekly_hours
    
@@ -628,7 +666,21 @@ def company_data():
 
     #Save Company Data
     if request.method == 'POST':
-        for i in range(day_num):
+        OpeningHours.query.filter_by(company_name=current_user.company_name).delete()
+        db.session.commit()
+        company_no = Company.query.order_by(Company.id.desc()).first()
+        if company_no is None:
+            new_company_no = 1
+        else:
+            new_company_no = company_no.id + 1
+
+        company_data = Company(id=new_company_no ,company_name=company_form.company_name.data, weekly_hours=company_form.weekly_hours.data, shifts=company_form.shift.data,
+                                created_by=company_id, changed_by=company_id, creation_timestamp = creation_date)
+        
+        db.session.merge(company_data)
+        db.session.commit()
+
+        for i in range(day_num): 
             entry1 = request.form.get(f'day_{i}_0')
             entry2 = request.form.get(f'day_{i}_1')
             if entry1:
@@ -639,47 +691,25 @@ def company_data():
                     new_id = last.id + 1
                 try:
                     new_entry1 = datetime.datetime.strptime(entry1, '%H:%M:%S').time()
-                    new_entry2 = datetime.datetime.strptime(entry2, '%H:%M:%S').time()
                 except:
                     new_entry1 = datetime.datetime.strptime(entry1, '%H:%M').time()
+                
+                try:
+                    new_entry2 = datetime.datetime.strptime(entry2, '%H:%M:%S').time()
+                except:
                     new_entry2 = datetime.datetime.strptime(entry2, '%H:%M').time()
+                    
                 new_weekday = weekdays[i]
 
 
                 opening = OpeningHours(id=new_id, company_name=current_user.company_name, weekday=new_weekday, start_time=new_entry1,
                                     end_time=new_entry2, created_by=company_id, changed_by=company_id,
                                     creation_timestamp = creation_date)
-                company_no = Company.query.order_by(Company.id.desc()).first()
-                if company_no is None:
-                    new_company_no = 1
-                else:
-                    new_company_no = last.id + 1
-                company_data = Company(id=new_company_no ,company_name=data_form.company_name.data, weekly_hours=data_form.weekly_hours.data, shifts=data_form.shifts.data,
-                                created_by=company_id, changed_by=company_id, creation_timestamp = creation_date)
+                
 
-
-                    db.session.add(opening)
-                    db.session.add(company_data)
-                    db.session.commit()
-
-    #Update Opening Hour - still not working
-    if company_form.update.data:
-        try:
-            for i in range(day_num):
-                new_opening = OpeningHours.query.filter_by(id=i+1).first()
-                entry1 = request.form.get(f'day_{i}_0')
-                entry2 = request.form.get(f'day_{i}_1')
-                new_start_time = datetime.datetime.strptime(entry1, '%H:%M:%S').time()
-                new_end_time = datetime.datetime.strptime(entry2, '%H:%M:%S').time()
-                new_opening.start_time = new_start_time
-                new_opening.end_time = new_end_time
+                db.session.add(opening)
                 db.session.commit()
-                flash('Update successful submitted')
-                return redirect(url_for('company'))
-        except:
-            db.session.rollback()
-            flash('Error occured :(')
-            return redirect(url_for('company'))
+
 
     return render_template('company.html', template_form=company_form, weekdays=weekdays, day_num=day_num, temp_dict=temp_dict, company_name=company_name, shift=shift, weekly_hours=weekly_hour)
 
