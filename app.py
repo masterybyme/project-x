@@ -265,6 +265,20 @@ def get_data():
         user_list.append(user_dict)
     return jsonify(user_list)
 
+@app.route('/api/new_user', methods=['POST'])
+def new_user():
+    data = request.json
+    user = User(first_name=data['first_name'],
+                last_name=data['last_name'],
+                email=data['email'],
+                employment_level=data['employment_level'],
+                company_name=data['company_name'],
+                department=data['department'],
+                access_level=data['access_level'])
+    db.session.add(user)
+    db.session.commit()
+    return {'success': True}
+
 
 
 @app.route('/update', methods=["GET", "POST"])
