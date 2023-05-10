@@ -248,7 +248,7 @@ def user():
                            account=account, template_form=user_form)
 
 
-#React user 
+#API routes 
 @app.route('/api/users')
 def get_data():
     users = User.query.all()
@@ -264,6 +264,7 @@ def get_data():
         }
         user_list.append(user_dict)
     return jsonify(user_list)
+
 
 @app.route('/api/new_user', methods=['POST'])
 def new_user():

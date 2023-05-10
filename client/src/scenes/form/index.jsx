@@ -3,12 +3,27 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
+import axios from 'axios';
 
 const Form = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
 
-  const handleFormSubmit = (values) => {
-    console.log(values);
+const handleFormSubmit = (values) => {
+    axios.post('/api/new_user', {
+      first_name: values.first_name,
+      last_name: values.last_name,
+      email: values.email,
+      employment_level: values.employment_level,
+      company_name: values.company_name,
+      department: values.departement,
+      access_level: values.access_level
+    })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   return (
@@ -44,10 +59,10 @@ const Form = () => {
                 label="Vorname"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.firstName}
+                value={values.first_name}
                 name="first_name"
-                error={!!touched.firstName && !!errors.firstName}
-                helperText={touched.firstName && errors.firstName}
+                error={!!touched.first_name && !!errors.first_name}
+                helperText={touched.first_name && errors.first_name}
                 sx={{ gridColumn: "span 2" }}
               />
               <TextField
@@ -57,10 +72,10 @@ const Form = () => {
                 label="Nachname"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.lastName}
+                value={values.last_name}
                 name="last_name"
-                error={!!touched.lastName && !!errors.lastName}
-                helperText={touched.lastName && errors.lastName}
+                error={!!touched.last_name && !!errors.last_name}
+                helperText={touched.last_name && errors.last_name}
                 sx={{ gridColumn: "span 2" }}
               />
               <TextField
@@ -80,19 +95,6 @@ const Form = () => {
                 fullWidth
                 variant="filled"
                 type="text"
-                label="Employment Level"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.employment_level}
-                name="employment_level"
-                error={!!touched.employment_level && !!errors.employment_level}
-                helperText={touched.employment_level && errors.employment_level}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
                 label="Firmennamen"
                 onBlur={handleBlur}
                 onChange={handleChange}
@@ -100,6 +102,19 @@ const Form = () => {
                 name="company_name"
                 error={!!touched.company_name && !!errors.company_name}
                 helperText={touched.company_name && errors.company_name}
+                sx={{ gridColumn: "span 4" }}
+              />
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Pensum"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.employment_level}
+                name="employment_level"
+                error={!!touched.employment_level && !!errors.employment_level}
+                helperText={touched.employment_level && errors.employment_level}
                 sx={{ gridColumn: "span 4" }}
               />
               <TextField
@@ -145,19 +160,24 @@ const phoneRegExp =
   /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
 
 const checkoutSchema = yup.object().shape({
-  firstName: yup.string().required("required"),
-  lastName: yup.string().required("required"),
+  first_name: yup.string().required("required"),
+  last_name: yup.string().required("required"),
   email: yup.string().email("invalid email").required("required"),
-  employment_level: yup
+  phonenumber: yup
     .string()
     .matches(phoneRegExp, "Phone number is not valid")
     .required("required"),
   company_name: yup.string().required("required"),
   access_level: yup.string().required("required"),
+  employment_level: yup
+    .number()
+    .min(0, 'Company level must be greater than or equal to 0%')
+    .max(100, 'Company level must be less than or equal to 100%')
+    .required("required"),
 });
 const initialValues = {
-  firstName: "",
-  lastName: "",
+  first_name: "",
+  last_name: "",
   email: "",
   employment_level: "",
   company_name: "",
