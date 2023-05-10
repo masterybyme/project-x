@@ -168,7 +168,7 @@ def admin_registration():
     if request.method =='POST':
         if data_form.password.data != data_form.password2.data:
             flash("Wrong Password")
-            return render_template('token_registration.html', data_tag=User.query.all(), template_form=data_form)
+            return render_template('admin_registration.html', data_tag=User.query.all(), template_form=data_form)
         else:
             creation_date = datetime.datetime.now()
             last = User.query.order_by(User.id.desc()).first()
@@ -178,7 +178,7 @@ def admin_registration():
             else:
                 new_id = last.id + 1
 
-            last_company_id = User.query.filter_by(company_name=data_form.company_name.data).order_by(User.company_id.desc()).first().company_id
+            last_company_id = User.query.filter_by(company_name=data_form.company_name.data).order_by(User.company_id.desc()).first()
             if last_company_id is None:
                 new_company_id = 1000
             else:
@@ -272,20 +272,26 @@ def get_data():
 def update():
     new_data = User.query.get(current_user.id)
     user_form = UpdateForm(csrf_enabled=False, obj=new_data)
-    if request.method == 'POST':
+    company_id = User.query.get(current_user.company_id)
 
-        user_form.populate_obj(new_data)
-        try:
+    if request.method == 'POST':
+        existing_user = User.query.filter_by(id=current_user.id).first()
+        hash = generate_password_hash(user_form.password.data)
+        if existing_user:
+            existing_user.first_name = user_form.first_name.data
+            existing_user.last_name = user_form.last_name.data
+            existing_user.employment_level = user_form.employment_level.data
+            existing_user.company_name = user_form.company_name.data
+            existing_user.department = user_form.department.data
+            existing_user.access_level = user_form.access_level.data
+            existing_user.email = user_form.email.data
+            existing_user.changed_by = company_id
+            existing_user.update_timestamp = datetime.datetime.now
 
             db.session.commit()
-            flash('Update successful submitted')
-            return redirect(url_for('user'))
-        except:
-            db.session.rollback()
-            flash('Error occured :(')
-            return redirect(url_for('user'))
-    else:
-        return render_template('update.html', data_tag=User.query.all(), account=new_data, template_form=user_form)
+
+
+    return render_template('update.html', data_tag=User.query.all(), account=new_data, template_form=user_form)
 
 
 
@@ -303,6 +309,11 @@ def planning():
     user = User.query.get(current_user.id)
     company_id = current_user.company_id
     planning_form = PlanningForm(csrf_enabled = False)
+
+    company_dict = {}
+    for company in User.query.filter_by(email=current_user.email).all():
+        company_dict[company.company_name] = company
+       
 
 
     temp_dict = {}
@@ -361,6 +372,10 @@ def planning():
     #Save Availability
     if request.method == 'POST' and 'submit' in request.form:
         for i in range(day_num):
+            new_date = monday + datetime.timedelta(days=i) + datetime.timedelta(days=week_adjustment)
+            Availability.query.filter_by(user_id=current_user.id, date=new_date).delete()
+            db.session.commit()
+
             entry1 = request.form.get(f'day_{i}_0')
             entry2 = request.form.get(f'day_{i}_1')
             entry3 = request.form.get(f'day_{i}_2')
@@ -373,21 +388,38 @@ def planning():
                     new_id = 1
                 else:
                     new_id = last.id + 1
-                new_date = monday + datetime.timedelta(days=i) + datetime.timedelta(days=week_adjustment)
+    
                 try:
                     new_entry1 = datetime.datetime.strptime(entry1, '%H:%M:%S').time()
-                    new_entry2 = datetime.datetime.strptime(entry2, '%H:%M:%S').time()
-                    new_entry3 = datetime.datetime.strptime(entry3, '%H:%M:%S').time()
-                    new_entry4 = datetime.datetime.strptime(entry4, '%H:%M:%S').time()
-                    new_entry5 = datetime.datetime.strptime(entry5, '%H:%M:%S').time()
-                    new_entry6 = datetime.datetime.strptime(entry6, '%H:%M:%S').time()
                 except:
                     new_entry1 = datetime.datetime.strptime(entry1, '%H:%M').time()
+                
+                try:
+                    new_entry2 = datetime.datetime.strptime(entry2, '%H:%M:%S').time()
+                except:
                     new_entry2 = datetime.datetime.strptime(entry2, '%H:%M').time()
+                
+                try:
+                    new_entry3 = datetime.datetime.strptime(entry3, '%H:%M:%S').time()
+                except:
                     new_entry3 = datetime.datetime.strptime(entry3, '%H:%M').time()
+                
+                try:
+                    new_entry4 = datetime.datetime.strptime(entry4, '%H:%M:%S').time()
+                except:
                     new_entry4 = datetime.datetime.strptime(entry4, '%H:%M').time()
+               
+                try:
+                    new_entry5 = datetime.datetime.strptime(entry5, '%H:%M:%S').time()
+                except:
                     new_entry5 = datetime.datetime.strptime(entry5, '%H:%M').time()
+                
+                try:
+                    new_entry6 = datetime.datetime.strptime(entry6, '%H:%M:%S').time()
+                except:
                     new_entry6 = datetime.datetime.strptime(entry6, '%H:%M').time()
+
+                
                 new_weekday = weekdays[i]
 
 
@@ -434,11 +466,10 @@ def planning():
                 db.session.add(data)
                 db.session.commit()
 
-    #Update Planning - Still not working
-    pass
+
 
     return render_template('planning.html', template_form=planning_form, monday=monday, weekdays=weekdays,
-                           day_num=day_num, temp_dict=temp_dict)
+                           day_num=day_num, temp_dict=temp_dict, company_dict=company_dict)
 
 
 @app.route('/delete_availability/<int:id>')
