@@ -15,6 +15,11 @@
         <h1>Time Table</h1>
 
          <p></p>
+         <select name="company_name">
+            {% for company_name in company_dict %}
+              <option value="{{ company_name }}">{{ company_name }}</option>
+            {% endfor %}
+          </select>
         <p>
             This week starts from: {{ monday }}
         </p>
