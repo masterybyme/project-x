@@ -1,4 +1,4 @@
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Button, TextField, InputAdornment, MenuItem, Select, FormControl, InputLabel  } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -115,6 +115,9 @@ const handleFormSubmit = (values) => {
                 name="employment_level"
                 error={!!touched.employment_level && !!errors.employment_level}
                 helperText={touched.employment_level && errors.employment_level}
+                InputProps={{
+                  endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                }}
                 sx={{ gridColumn: "span 4" }}
               />
               <TextField
@@ -130,19 +133,22 @@ const handleFormSubmit = (values) => {
                 helperText={touched.departement && errors.departement}
                 sx={{ gridColumn: "span 4" }}
               />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Access Level"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.access_level}
-                name="access_level"
-                error={!!touched.access_level && !!errors.access_level}
-                helperText={touched.access_level && errors.access_level}
-                sx={{ gridColumn: "span 4" }}
-              />
+              <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
+                <InputLabel id="access_level-label">Access Level</InputLabel>
+                <Select
+                  labelId="access_level-label"
+                  id="access_level"
+                  name="access_level"
+                  value={values.access_level}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={!!touched.access_level && !!errors.access_level}
+                  helperText={touched.access_level && errors.access_level}
+                >
+                  <MenuItem value="admin">Admin</MenuItem>
+                  <MenuItem value="user">User</MenuItem>
+                </Select>
+              </FormControl>
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">
