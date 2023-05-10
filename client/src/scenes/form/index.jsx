@@ -13,7 +13,7 @@ const Form = () => {
 
   return (
     <Box m="20px">
-      <Header title="CREATE USER" subtitle="Erstelle neuen User" />
+      <Header title="NEUER USER" subtitle="Erstelle einen neuen User" />
 
       <Formik
         onSubmit={handleFormSubmit}
@@ -41,11 +41,11 @@ const Form = () => {
                 fullWidth
                 variant="filled"
                 type="text"
-                label="First Name"
+                label="Vorname"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.firstName}
-                name="firstName"
+                name="first_name"
                 error={!!touched.firstName && !!errors.firstName}
                 helperText={touched.firstName && errors.firstName}
                 sx={{ gridColumn: "span 2" }}
@@ -54,11 +54,11 @@ const Form = () => {
                 fullWidth
                 variant="filled"
                 type="text"
-                label="Last Name"
+                label="Nachname"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.lastName}
-                name="lastName"
+                name="last_name"
                 error={!!touched.lastName && !!errors.lastName}
                 helperText={touched.lastName && errors.lastName}
                 sx={{ gridColumn: "span 2" }}
@@ -80,39 +80,52 @@ const Form = () => {
                 fullWidth
                 variant="filled"
                 type="text"
-                label="Contact Number"
+                label="Employment Level"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.contact}
-                name="contact"
-                error={!!touched.contact && !!errors.contact}
-                helperText={touched.contact && errors.contact}
+                value={values.employment_level}
+                name="employment_level"
+                error={!!touched.employment_level && !!errors.employment_level}
+                helperText={touched.employment_level && errors.employment_level}
                 sx={{ gridColumn: "span 4" }}
               />
               <TextField
                 fullWidth
                 variant="filled"
                 type="text"
-                label="Address 1"
+                label="Firmennamen"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.address1}
-                name="address1"
-                error={!!touched.address1 && !!errors.address1}
-                helperText={touched.address1 && errors.address1}
+                value={values.company_name}
+                name="company_name"
+                error={!!touched.company_name && !!errors.company_name}
+                helperText={touched.company_name && errors.company_name}
                 sx={{ gridColumn: "span 4" }}
               />
               <TextField
                 fullWidth
                 variant="filled"
                 type="text"
-                label="Address 2"
+                label="Departement"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.address2}
-                name="address2"
-                error={!!touched.address2 && !!errors.address2}
-                helperText={touched.address2 && errors.address2}
+                value={values.departement}
+                name="departement"
+                error={!!touched.departement && !!errors.departement}
+                helperText={touched.departement && errors.departement}
+                sx={{ gridColumn: "span 4" }}
+              />
+              <TextField
+                fullWidth
+                variant="filled"
+                type="text"
+                label="Access Level"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.access_level}
+                name="access_level"
+                error={!!touched.access_level && !!errors.access_level}
+                helperText={touched.access_level && errors.access_level}
                 sx={{ gridColumn: "span 4" }}
               />
             </Box>
@@ -135,20 +148,20 @@ const checkoutSchema = yup.object().shape({
   firstName: yup.string().required("required"),
   lastName: yup.string().required("required"),
   email: yup.string().email("invalid email").required("required"),
-  contact: yup
+  employment_level: yup
     .string()
     .matches(phoneRegExp, "Phone number is not valid")
     .required("required"),
-  address1: yup.string().required("required"),
-  address2: yup.string().required("required"),
+  company_name: yup.string().required("required"),
+  access_level: yup.string().required("required"),
 });
 const initialValues = {
   firstName: "",
   lastName: "",
   email: "",
-  contact: "",
-  address1: "",
-  address2: "",
+  employment_level: "",
+  company_name: "",
+  access_level: "",
 };
 
 export default Form;
