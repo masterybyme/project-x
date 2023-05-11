@@ -1,45 +1,69 @@
-import pulp
-import time
-import random
+from pulp import *
+from data_processing import DataProcessing
 
-# Anzahl der Mitarbeiter und Tage
-num_workers = 2000
-num_days = 21
+class PulpAlgorithm:
+    def __init__(self, dp: DataProcessing):
+        # Attribute von DataProcessing zuweisen
+        self.current_user_id = dp.current_user_id
+        self.user_availability = dp.user_availability
+        self.opening_hours = dp.opening_hours
+        self.laden_oeffnet = dp.laden_oeffnet
+        self.laden_schliesst = dp.laden_schliesst
+        self.binary_availability = dp.binary_availability
 
-# Zufällige Verfügbarkeit generieren
-availability = [[random.choice([True, False]) for _ in range(num_days)] for _ in range(num_workers)]
+    def run(self):
+        self.algorithm()
 
-# Problem erstellen
-problem = pulp.LpProblem("worker_scheduling", pulp.LpMinimize)
+    def algorithm(self):
+        mitarbeiter = [f"MA{i+1}" for i in range(len(self.binary_availability))]
 
-# Variablen erstellen
-x = [[pulp.LpVariable(f"x_{i}_{j}", cat='Binary') if availability[i][j] else 0
-      for j in range(num_days)] for i in range(num_workers)]
+        verfügbarkeit = {}
+        for i, (user_id, availabilities) in enumerate(self.binary_availability.items()):
+            # Nehmen wir an, dass wir uns nur für die Verfügbarkeit am ersten Tag interessieren
+            date, binary_list = availabilities[0]
+            verfügbarkeit[mitarbeiter[i]] = binary_list
 
-# Constraints hinzufügen
-for i in range(num_workers):
-    problem += pulp.lpSum(x[i][j] for j in range(num_days)) <= 5  # Jeder Mitarbeiter arbeitet höchstens 5 Tage
-
-for j in range(num_days):
-    problem += pulp.lpSum(x[i][j] if isinstance(x[i][j], pulp.LpVariable) else 0 for i in range(num_workers)) >= 20  # An jedem Tag müssen mindestens 20 Mitarbeiter arbeiten
+        kosten = {ma: 20 for ma in mitarbeiter}  # Kosten pro Stunde
+        max_zeit = {ma: 8 for ma in mitarbeiter}  # Maximale Arbeitszeit pro Tag
+        min_anwesend = [1, 1, 1, 1]  # Mindestanzahl an Mitarbeitern pro Stunde
 
 
-# Zielfunktion (könnte auf Ihre spezielle Anforderung angepasst werden)
-problem += pulp.lpSum(x)
+        # Problem
+        prob = LpProblem("Mitarbeiterplanung", LpMinimize)
+        print("1. Problem: ", prob)
 
-# Constraints (könnten auf Ihre spezielle Anforderung angepasst werden)
-for i in range(num_workers):
-    problem += pulp.lpSum(x[i][j] for j in range(num_days)) <= 5  # Jeder Mitarbeiter arbeitet höchstens 5 Tage
+        # Entscheidungsvariablen
+        x = LpVariable.dicts("Arbeitszeit", [(i, j) for i in mitarbeiter for j in range(4)], 0, 1, LpInteger)
+        print("2. x: ", x)
 
-# Problem lösen und Zeit messen
-start_time = time.time()
-problem.solve()
-end_time = time.time()
+        # Zielfunktion
+        prob += lpSum([kosten[i] * lpSum([x[i, j] for j in range(4)]) for i in mitarbeiter])
+        print("3. Problem: ", prob)
 
-# Ausführungszeit ausgeben
-print("Execution time: ", end_time - start_time)
+        # Beschränkungen
+        for i in mitarbeiter:
+            prob += lpSum([x[i, j] for j in range(4)]) <= max_zeit[i], f"MaxArbeitszeit_{i}"
+            for j in range(4):
+                prob += x[i, j] <= verfügbarkeit[i][j], f"Verfügbarkeit_{i}_{j}"
 
-# Lösung in Matrixform ausgeben
-solution = [[pulp.value(var) if isinstance(var, pulp.LpVariable) else 0 for var in worker] for worker in x]
-for row in solution:
-    print(row)
+        for j in range(4):
+            prob += lpSum([x[i, j] for i in mitarbeiter]) >= min_anwesend[j], f"MinAnwesend_{j}"
+
+        print("4. Problem: ", prob)
+
+        # Problem lösen
+        prob.solve()
+
+        # Ergebnisse ausgeben
+        mitarbeiter_arbeitszeiten = {}
+        for i in mitarbeiter:
+            mitarbeiter_arbeitszeiten[i] = []
+            for j in range(4):
+                mitarbeiter_arbeitszeiten[i].append(int(value(x[i, j])))
+
+        print(mitarbeiter_arbeitszeiten)
+
+
+
+
+

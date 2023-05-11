@@ -20,11 +20,11 @@ class DataProcessing:
         """ Die einzelnen Methoden werden in der Reihe nach ausgeführt """
         self.get_availability()
         # Ausgabe user_availability
-        print(f"User Availability: {self.user_availability}")
+        # print(f"User Availability: {self.user_availability}")
         self.get_opening_hours()
-        print(f"Laden öffnet: {self.laden_oeffnet}")
-        print(f"Laden schliesst: {self.laden_schliesst}")
-        print(f"Opening Hours: {self.opening_hours}")
+        # print(f"Laden öffnet: {self.laden_oeffnet}")
+        # print(f"Laden schliesst: {self.laden_schliesst}")
+        # print(f"Opening Hours: {self.opening_hours}")
         self.binaere_liste()
         print(f"Binary Availability: {self.binary_availability}")
 

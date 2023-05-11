@@ -705,9 +705,12 @@ def admin():
     # Solve Button, erstellt 13.04.23 von Gery
     if solve_form.solve_button.data:
         from data_processing import DataProcessing
+        from pulp_algorithm import PulpAlgorithm
         # Damit der Code threadsafe ist, wird jedesmal eine neue Instanz erstellt pro Anfrage!
         dp = DataProcessing(current_user.id)
         dp.run()
+        pulp_algo = PulpAlgorithm(dp)
+        pulp_algo.run()
         return render_template('admin.html', template_form=time_form, timedelta=timedelta, monday=monday,
                                Time=Time, weekdays=weekdays, day_num=day_num, solve_form=solve_form, timereq_dict=timereq_dict)
 
