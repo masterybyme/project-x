@@ -1,28 +1,28 @@
-import { Box, Button, TextField, InputAdornment, MenuItem, Select, FormControl, InputLabel  } from "@mui/material";
+import { useState, useEffect } from "react";
+import { Box, Button, TextField, InputAdornment, MenuItem, Select, FormControl, InputLabel, Snackbar  } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
 import axios from 'axios';
 
+
 const Form = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+  const [showErrorNotification, setShowErrorNotification] = useState(false);
 
-const handleFormSubmit = (values) => {
-    axios.post('http://localhost:5000/api/new_user', {
-      first_name: values.first_name,
-      last_name: values.last_name,
-      email: values.email,
-      employment_level: values.employment_level,
-      company_name: values.company_name,
-      department: values.department,
-      access_level: values.access_level
-    })
+  const handleFormSubmit = (values) => {
+    axios
+      .post('http://localhost:5000/api/registration/admin', values)
       .then((response) => {
         console.log(response.data);
+        // Perform any additional actions after successful registration
+        setShowSuccessNotification(true);
       })
       .catch((error) => {
         console.error(error);
+        setShowErrorNotification(true);
       });
   };
 
@@ -149,6 +149,35 @@ const handleFormSubmit = (values) => {
                   <MenuItem value="user">User</MenuItem>
                 </Select>
               </FormControl>
+              <TextField
+                fullWidth
+                variant="filled"
+                type="password"
+                label="Password"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.password}
+                name="password"
+                error={!!touched.password && !!errors.password}
+                helperText={touched.password && errors.password}
+                sx={{ gridColumn: "span 2" }}
+              />
+              <TextField
+                fullWidth
+                variant="filled"
+                type="password"
+                label="Confirm Password"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.confirmPassword}
+                name="confirmPassword"
+                error={!!touched.confirmPassword && !!errors.confirmPassword}
+                helperText={touched.confirmPassword && errors.confirmPassword}
+                sx={{ gridColumn: "span 2" }}
+              />
+              {values.password !== values.confirmPassword && touched.confirmPassword && (
+                <p>Passwords do not match</p>
+              )}
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">
@@ -158,20 +187,26 @@ const handleFormSubmit = (values) => {
           </form>
         )}
       </Formik>
+      <Snackbar
+        open={showSuccessNotification}
+        onClose={() => setShowSuccessNotification(false)}
+        message="Registration successful"
+        autoHideDuration={3000}
+      />
+
     </Box>
   );
 };
 
-const phoneRegExp =
-  /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
 
 const checkoutSchema = yup.object().shape({
   first_name: yup.string().required("required"),
   last_name: yup.string().required("required"),
   email: yup.string().email("invalid email").required("required"),
-  phonenumber: yup
+  password: yup.string().required("required"),
+  confirmPassword: yup
     .string()
-    .matches(phoneRegExp, "Phone number is not valid")
+    .oneOf([yup.ref("password"), null], "Passwords must match")
     .required("required"),
   company_name: yup.string().required("required"),
   access_level: yup.string().required("required"),
@@ -181,6 +216,7 @@ const checkoutSchema = yup.object().shape({
     .max(100, 'Company level must be less than or equal to 100%')
     .required("required"),
 });
+
 const initialValues = {
   first_name: "",
   last_name: "",
@@ -189,6 +225,8 @@ const initialValues = {
   company_name: "",
   access_level: "",
   department: "",
+  password: "",
+  confirmPassword: "",
 };
 
 export default Form;

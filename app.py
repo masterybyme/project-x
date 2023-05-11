@@ -280,6 +280,53 @@ def new_user():
     db.session.commit()
     return {'success': True}
 
+#new
+@app.route('/api/registration/admin', methods=['POST'])
+def api_admin_registration():
+    data = request.json
+    #maybe can be deleted
+    if data['password'] != data['password2']:
+        return jsonify({'error': 'Wrong Password'})
+
+    creation_date = datetime.datetime.now()
+    last = User.query.order_by(User.id.desc()).first()
+
+    if last is None:
+        new_id = 10000
+    else:
+        new_id = last.id + 1
+
+    last_company_id = User.query.filter_by(company_name=data['company_name']).order_by(User.company_id.desc()).first()
+
+    if last_company_id is None:
+        new_company_id = 1000
+    else:
+        new_company_id = last_company_id + 1
+
+    data = User(
+        id=new_id,
+        company_id=new_company_id,
+        first_name=data['first_name'],
+        last_name=data['last_name'],
+        employment_level=data['employment_level'],
+        company_name=data['company_name'],
+        department=data['department'],
+        access_level=data['access_level'],
+        email=data['email'],
+        password=generate_password_hash(data['password']),
+        created_by=new_company_id,
+        changed_by=new_company_id,
+        creation_timestamp=creation_date
+    )
+
+    try:
+        db.session.add(data)
+        db.session.commit()
+        return jsonify({'message': 'Registration successful'})
+    except:
+        db.session.rollback()
+        return jsonify({'error': 'Error occurred - Your email might already be in use'})
+
 
 
 @app.route('/update', methods=["GET", "POST"])

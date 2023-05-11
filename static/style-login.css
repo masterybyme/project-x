@@ -27,7 +27,7 @@ section .color-login:nth-child(1){
     top: -350px;
     width: 800px;
     height: 800px;
-    background-color: #009688;
+    background-color: #000000;
 }
 
 section .color-login:nth-child(2){
@@ -35,7 +35,7 @@ section .color-login:nth-child(2){
     left: 100px;
     width: 800px;
     height: 800px;
-    background-color: #095851;
+    background-color: #ff0597;
 }
 
 section .color-login:nth-child(3){
@@ -43,7 +43,7 @@ section .color-login:nth-child(3){
     right: 100px;
     width: 1000px;
     height: 1000px;
-    background-color: #0b3566;
+    background-color: #000102;
 }
 
 .box-login{
