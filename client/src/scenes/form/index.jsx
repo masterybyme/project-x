@@ -9,13 +9,13 @@ const Form = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
 
 const handleFormSubmit = (values) => {
-    axios.post('/api/new_user', {
+    axios.post('http://localhost:5000/api/new_user', {
       first_name: values.first_name,
       last_name: values.last_name,
       email: values.email,
       employment_level: values.employment_level,
       company_name: values.company_name,
-      department: values.departement,
+      department: values.department,
       access_level: values.access_level
     })
       .then((response) => {
@@ -62,7 +62,7 @@ const handleFormSubmit = (values) => {
                 value={values.first_name}
                 name="first_name"
                 error={!!touched.first_name && !!errors.first_name}
-                helperText={touched.first_name && errors.first_name}
+                helpertext={touched.first_name && errors.first_name}
                 sx={{ gridColumn: "span 2" }}
               />
               <TextField
@@ -75,7 +75,7 @@ const handleFormSubmit = (values) => {
                 value={values.last_name}
                 name="last_name"
                 error={!!touched.last_name && !!errors.last_name}
-                helperText={touched.last_name && errors.last_name}
+                helpertext={touched.last_name && errors.last_name}
                 sx={{ gridColumn: "span 2" }}
               />
               <TextField
@@ -88,7 +88,7 @@ const handleFormSubmit = (values) => {
                 value={values.email}
                 name="email"
                 error={!!touched.email && !!errors.email}
-                helperText={touched.email && errors.email}
+                helpertext={touched.email && errors.email}
                 sx={{ gridColumn: "span 4" }}
               />
               <TextField
@@ -101,7 +101,7 @@ const handleFormSubmit = (values) => {
                 value={values.company_name}
                 name="company_name"
                 error={!!touched.company_name && !!errors.company_name}
-                helperText={touched.company_name && errors.company_name}
+                helpertext={touched.company_name && errors.company_name}
                 sx={{ gridColumn: "span 4" }}
               />
               <TextField
@@ -114,7 +114,7 @@ const handleFormSubmit = (values) => {
                 value={values.employment_level}
                 name="employment_level"
                 error={!!touched.employment_level && !!errors.employment_level}
-                helperText={touched.employment_level && errors.employment_level}
+                helpertext={touched.employment_level && errors.employment_level}
                 InputProps={{
                   endAdornment: <InputAdornment position="end">%</InputAdornment>,
                 }}
@@ -124,13 +124,13 @@ const handleFormSubmit = (values) => {
                 fullWidth
                 variant="filled"
                 type="text"
-                label="Departement"
+                label="Department"
                 onBlur={handleBlur}
                 onChange={handleChange}
-                value={values.departement}
-                name="departement"
-                error={!!touched.departement && !!errors.departement}
-                helperText={touched.departement && errors.departement}
+                value={values.department}
+                name="department"
+                error={!!touched.department && !!errors.department}
+                helpertext={touched.department && errors.department}
                 sx={{ gridColumn: "span 4" }}
               />
               <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
@@ -143,7 +143,7 @@ const handleFormSubmit = (values) => {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   error={!!touched.access_level && !!errors.access_level}
-                  helperText={touched.access_level && errors.access_level}
+                  helpertext={touched.access_level && errors.access_level}
                 >
                   <MenuItem value="admin">Admin</MenuItem>
                   <MenuItem value="user">User</MenuItem>
@@ -188,6 +188,7 @@ const initialValues = {
   employment_level: "",
   company_name: "",
   access_level: "",
+  department: "",
 };
 
 export default Form;
