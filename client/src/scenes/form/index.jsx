@@ -175,9 +175,7 @@ const Form = () => {
                 helperText={touched.confirmPassword && errors.confirmPassword}
                 sx={{ gridColumn: "span 2" }}
               />
-              {values.password !== values.confirmPassword && touched.confirmPassword && (
-                <p>Passwords do not match</p>
-              )}
+              {values.password !== values.confirmPassword && touched.confirmPassword }
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">

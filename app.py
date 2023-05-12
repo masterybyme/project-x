@@ -324,8 +324,6 @@ def api_admin_registration():
         db.session.rollback()
         return jsonify({'error': 'Error occurred - Your email might already be in use'})
 
-
-
 @app.route('/update', methods=["GET", "POST"])
 @login_required
 def update():
