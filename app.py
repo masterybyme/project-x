@@ -284,10 +284,6 @@ def new_user():
 @app.route('/api/registration/admin', methods=['POST'])
 def api_admin_registration():
     data = request.json
-    #maybe can be deleted
-    if data['password'] != data['password2']:
-        return jsonify({'error': 'Wrong Password'})
-
     creation_date = datetime.datetime.now()
     last = User.query.order_by(User.id.desc()).first()
 
@@ -301,7 +297,7 @@ def api_admin_registration():
     if last_company_id is None:
         new_company_id = 1000
     else:
-        new_company_id = last_company_id + 1
+        new_company_id = last_company_id.company_id + 1
 
     data = User(
         id=new_id,

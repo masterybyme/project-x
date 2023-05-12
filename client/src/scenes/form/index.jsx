@@ -192,6 +192,28 @@ const Form = () => {
         onClose={() => setShowSuccessNotification(false)}
         message="Registration successful"
         autoHideDuration={3000}
+        sx={{
+          backgroundColor: "green", 
+          color: "white", 
+          "& .MuiSnackbarContent-root": {
+            borderRadius: "4px",
+            padding: "10px",
+          },
+        }}
+      />
+      <Snackbar
+        open={showErrorNotification}
+        onClose={() => setShowErrorNotification(false)}
+        message="Error occurred - Your email might already be in use"
+        autoHideDuration={3000}
+        sx={{
+          backgroundColor: "red", 
+          color: "white", 
+          "& .MuiSnackbarContent-root": {
+            borderRadius: "4px",
+            padding: "10px",
+          },
+        }}
       />
 
     </Box>
