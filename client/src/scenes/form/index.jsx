@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Box, Button, TextField, InputAdornment, MenuItem, Select, FormControl, InputLabel, Snackbar  } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
@@ -12,12 +12,13 @@ const Form = () => {
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
   const [showErrorNotification, setShowErrorNotification] = useState(false);
 
-  const handleFormSubmit = (values) => {
+  const handleFormSubmit = (values, { resetForm }) => {
     axios
       .post('http://localhost:5000/api/registration/admin', values)
       .then((response) => {
         console.log(response.data);
         setShowSuccessNotification(true);
+        resetForm();
       })
       .catch((error) => {
         console.error(error);
