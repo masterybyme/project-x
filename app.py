@@ -318,10 +318,10 @@ def api_admin_registration():
     try:
         db.session.add(data)
         db.session.commit()
-        return jsonify({'message': 'Registration successful'})
+        
     except:
         db.session.rollback()
-        return jsonify({'error': 'Error occurred - Your email might already be in use'})
+
 
 
 

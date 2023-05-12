@@ -17,7 +17,6 @@ const Form = () => {
       .post('http://localhost:5000/api/registration/admin', values)
       .then((response) => {
         console.log(response.data);
-        // Perform any additional actions after successful registration
         setShowSuccessNotification(true);
       })
       .catch((error) => {
@@ -193,11 +192,12 @@ const Form = () => {
         message="Registration successful"
         autoHideDuration={3000}
         sx={{
-          backgroundColor: "green", 
+          backgroundColor: "green !important", 
           color: "white", 
           "& .MuiSnackbarContent-root": {
             borderRadius: "4px",
-            padding: "10px",
+            padding: "15px",
+            fontSize: "16px",
           },
         }}
       />
@@ -207,11 +207,12 @@ const Form = () => {
         message="Error occurred - Your email might already be in use"
         autoHideDuration={3000}
         sx={{
-          backgroundColor: "red", 
+          backgroundColor: "red !important", 
           color: "white", 
           "& .MuiSnackbarContent-root": {
             borderRadius: "4px",
-            padding: "10px",
+            padding: "15px",
+            fontSize: "16px",
           },
         }}
       />
