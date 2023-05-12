@@ -1,4 +1,4 @@
-from pulp import *
+from ortools.linear_solver import pywraplp
 from data_processing import DataProcessing
 
 class PulpAlgorithm:
@@ -27,43 +27,40 @@ class PulpAlgorithm:
         max_zeit = {ma: 8 for ma in mitarbeiter}  # Maximale Arbeitszeit pro Tag
         min_anwesend = [1, 1, 1, 1]  # Mindestanzahl an Mitarbeitern pro Stunde
 
-
         # Problem
-        prob = LpProblem("Mitarbeiterplanung", LpMinimize)
-        print("1. Problem: ", prob)
+        solver = pywraplp.Solver.CreateSolver('GLOP')
 
         # Entscheidungsvariablen
-        x = LpVariable.dicts("Arbeitszeit", [(i, j) for i in mitarbeiter for j in range(4)], 0, 1, LpInteger)
-        print("2. x: ", x)
+        x = {}
+        for i in mitarbeiter:
+            for j in range(4):
+               x[i, j] = solver.IntVar(0, 1, 'x[%s, %s]' % (i, j))
+
 
         # Zielfunktion
-        prob += lpSum([kosten[i] * lpSum([x[i, j] for j in range(4)]) for i in mitarbeiter])
-        print("3. Problem: ", prob)
+        solver.Minimize(solver.Sum([kosten[i] * x[i, j] for i in mitarbeiter for j in range(4)]))
 
         # Beschränkungen
         for i in mitarbeiter:
-            prob += lpSum([x[i, j] for j in range(4)]) <= max_zeit[i], f"MaxArbeitszeit_{i}"
+            solver.Add(solver.Sum([x[i, j] for j in range(4)]) <= max_zeit[i])
             for j in range(4):
-                prob += x[i, j] <= verfügbarkeit[i][j], f"Verfügbarkeit_{i}_{j}"
+                solver.Add(x[i, j] <= verfügbarkeit[i][j])
 
         for j in range(4):
-            prob += lpSum([x[i, j] for i in mitarbeiter]) >= min_anwesend[j], f"MinAnwesend_{j}"
-
-        print("4. Problem: ", prob)
+            solver.Add(solver.Sum([x[i, j] for i in mitarbeiter]) >= min_anwesend[j])
 
         # Problem lösen
-        prob.solve()
+        status = solver.Solve()
 
         # Ergebnisse ausgeben
-        mitarbeiter_arbeitszeiten = {}
-        for i in mitarbeiter:
-            mitarbeiter_arbeitszeiten[i] = []
-            for j in range(4):
-                mitarbeiter_arbeitszeiten[i].append(int(value(x[i, j])))
-
-        print(mitarbeiter_arbeitszeiten)
-
-
-
-
+        if status == pywraplp.Solver.OPTIMAL:
+            mitarbeiter_arbeitszeiten = {}
+            for i in mitarbeiter:
+                mitarbeiter_arbeitszeiten[i] = []
+                for j in range(4):
+                    mitarbeiter_arbeitszeiten[i].append(int(x[i, j].solution_value()))
+            print(mitarbeiter_arbeitszeiten)
+        else:
+            print('Das Problem konnte nicht optimal gelöst werden.')
+        
 
