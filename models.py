@@ -263,3 +263,17 @@ class RegistrationToken(db.Model, UserMixin):
         self.department = department
         self.access_level = access_level
         self.created_by = created_by
+
+
+
+class PasswordReset(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(200), index=True, unique=False)
+    token = db.Column(db.String(6), index=True, unique=False)
+    expiration = db.Column(db.DateTime, default=datetime.datetime.now() + datetime.timedelta(hours=24))
+    creation_timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
+
+    def __init__(self, id, email, token):
+        self.id = id
+        self.email = email
+        self.token = token

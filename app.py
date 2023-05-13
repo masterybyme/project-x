@@ -93,7 +93,7 @@ from forms import EmployeeForm, PlanningForm, UpdateForm, TimeReqForm, InviteFor
 #-------------------------------------------------------------------------
 
 from models import User, Availability, TimeReq, Company, OpeningHours, Timetable, \
-    TemplateAvailability, TemplateTimeRequirement, RegistrationToken
+    TemplateAvailability, TemplateTimeRequirement, RegistrationToken, PasswordReset
 
 
 #Define functions
@@ -333,7 +333,6 @@ def update():
 
     if request.method == 'POST':
         existing_user = User.query.filter_by(id=current_user.id).first()
-        hash = generate_password_hash(user_form.password.data)
         if existing_user:
             existing_user.first_name = user_form.first_name.data
             existing_user.last_name = user_form.last_name.data
@@ -350,6 +349,67 @@ def update():
 
     return render_template('update.html', data_tag=User.query.all(), account=new_data, template_form=user_form)
 
+
+@app.route('/forget_password', methods=["GET", "POST"])
+def forget_password():
+    update_form = UpdateForm(csrf_enabled=False)
+  
+    if request.method == 'POST':
+        existing_user = User.query.filter_by(email=update_form.email.data).first()
+        if existing_user is None:
+            flash('No User exists under your email')
+        else:
+            random_token = random.randint(100000,999999)
+            reset_url = url_for('reset_password', token=random_token, _external=True)
+            last = PasswordReset.query.order_by(PasswordReset.id.desc()).first()
+            if last is None:
+                new_id = 1
+            else:
+                new_id = last.id + 1
+
+            data = PasswordReset(id=new_id, email=update_form.email.data, token=random_token)
+
+            db.session.add(data)
+            db.session.commit()
+
+            msg = Message('Reset Password', recipients=['timetab@gmx.ch'])
+            msg.body = f"Hey there,\n \n Below you will find your reset Link. \n \n {reset_url}"
+            mail.send(msg)
+
+    return render_template('forget_password.html', template_form=update_form)
+
+
+
+@app.route('/reset_password/<token>', methods=["GET", "POST"])
+def reset_password(token):
+    update_form = UpdateForm(csrf_enabled=False)
+
+    reset_request = PasswordReset.query.filter_by(token=token).first()
+    if reset_request is None or reset_request.expiration < datetime.datetime.now():
+        flash('Request is expired or does not exist')
+        return redirect(url_for('login'))
+
+
+    if request.method == 'POST':
+        if update_form.password.data != update_form.password2.data:
+            flash("Password does not match")
+            return redirect(url_for('login'))
+        else:
+            hash = generate_password_hash(update_form.password.data)
+            existing_user = User.query.filter_by(email=reset_request.email).first()
+            print(existing_user)
+            print(token)
+            if existing_user:
+                existing_user.password = hash
+            
+                db.session.commit()
+
+                db.session.delete(reset_request)
+                db.session.commit()
+        return redirect(url_for('login'))
+
+
+    return render_template('reset_password.html', template_form=update_form)
 
 
 @app.route('/planning', methods = ['GET', 'POST'])
