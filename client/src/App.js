@@ -6,6 +6,7 @@ import Dashboard from "./scenes/dashboard";
 import Team from "./scenes/team";
 import Invoices from "./scenes/invoices";
 import Contacts from "./scenes/contacts";
+import Company from "./scenes/company";
 import Bar from "./scenes/bar";
 import Form from "./scenes/form";
 import Line from "./scenes/line";
@@ -62,6 +63,7 @@ function App() {
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/geography" element={<Geography />} />
               <Route path="/plan" element={<Plan />} />
+              <Route path="/company" element={<Company />} />
             </Routes>
             <p>{message}</p>
           </main>
