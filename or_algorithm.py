@@ -1,7 +1,7 @@
 from ortools.linear_solver import pywraplp
 from data_processing import DataProcessing
 
-class PulpAlgorithm:
+class ORAlgorithm:
     def __init__(self, dp: DataProcessing):
         # Attribute von DataProcessing zuweisen
         self.current_user_id = dp.current_user_id
