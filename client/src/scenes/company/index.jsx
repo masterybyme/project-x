@@ -1,16 +1,19 @@
 import { useState } from "react";
-import { Box, Button, TextField, InputAdornment, MenuItem, Select, FormControl, InputLabel, Snackbar  } from "@mui/material";
+import { useTheme, Box, Button, TextField, InputAdornment, MenuItem, Select, FormControl, InputLabel, Snackbar, Typography  } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
+import { tokens } from "../../theme";
 import axios from 'axios';
 
 
-const Form = () => {
+const Company = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
   const [showErrorNotification, setShowErrorNotification] = useState(false);
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
 
   const handleFormSubmit = (values, { resetForm }) => {
     axios
@@ -28,9 +31,11 @@ const Form = () => {
 
   return (
     <Box m="20px">
-      <Header title="Company Information" subtitle="Please update your company data whenever necessary. This are the basics for your optimized Scheduler.
-" />
-      
+      <Header title="COMPANY" 
+      subtitle="Please update your company data whenever necessary. This are the basics for your optimized Scheduler." 
+      />
+      <h2>Company Information</h2>
+
       <Formik
         onSubmit={handleFormSubmit}
         initialValues={initialValues}
@@ -53,6 +58,14 @@ const Form = () => {
                 "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
               }}
             >
+            <Typography color={colors.greenAccent[500]} variant="h4" sx={{
+                gridColumn: "span 2",
+                display: "flex",
+                alignItems: "center",
+                height: "100%",
+                }}>
+             Firmennamen
+            </Typography>
               <TextField
                 fullWidth
                 variant="filled"
@@ -66,6 +79,14 @@ const Form = () => {
                 helpertext={touched.first_name && errors.first_name}
                 sx={{ gridColumn: "span 2" }}
               />
+              <Typography color={colors.greenAccent[500]} variant="h4" sx={{
+                gridColumn: "span 2",
+                display: "flex",
+                alignItems: "center",
+                height: "100%",
+                }}>
+             Weekly Hours
+            </Typography>
               <TextField
                 fullWidth
                 variant="filled"
@@ -79,6 +100,14 @@ const Form = () => {
                 helpertext={touched.last_name && errors.last_name}
                 sx={{ gridColumn: "span 2" }}
               />
+              <Typography color={colors.greenAccent[500]} variant="h4" sx={{
+                gridColumn: "span 2",
+                display: "flex",
+                alignItems: "center",
+                height: "100%",
+                }}>
+             Shifts
+            </Typography>
               <TextField
                 fullWidth
                 variant="filled"
@@ -90,7 +119,7 @@ const Form = () => {
                 name="email"
                 error={!!touched.email && !!errors.email}
                 helpertext={touched.email && errors.email}
-                sx={{ gridColumn: "span 4" }}
+                sx={{ gridColumn: "span 2" }}
               />
               <TextField
                 fullWidth
@@ -252,4 +281,4 @@ const initialValues = {
   confirmPassword: "",
 };
 
-export default Form;
+export default Company;
