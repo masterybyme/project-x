@@ -760,7 +760,7 @@ def admin():
     # Solve Button, erstellt 13.04.23 von Gery
     if solve_form.solve_button.data:
         from data_processing import DataProcessing
-        from pulp_algorithm import PulpAlgorithm
+        from or_algorithm import ORAlgorithm
         # Damit der Code threadsafe ist, wird jedesmal eine neue Instanz erstellt pro Anfrage!
         dp = DataProcessing(current_user.id)
         dp.run()

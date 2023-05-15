@@ -3,7 +3,6 @@ from data_processing import DataProcessing
 
 class ORAlgorithm:
     def __init__(self, dp: DataProcessing):
-        # Attribute von DataProcessing zuweisen
         self.current_user_id = dp.current_user_id
         self.user_availability = dp.user_availability
         self.opening_hours = dp.opening_hours
@@ -19,37 +18,58 @@ class ORAlgorithm:
 
         verfügbarkeit = {}
         for i, (user_id, availabilities) in enumerate(self.binary_availability.items()):
-            # Nehmen wir an, dass wir uns nur für die Verfügbarkeit am ersten Tag interessieren
-            date, binary_list = availabilities[0]
-            verfügbarkeit[mitarbeiter[i]] = binary_list
+            verfügbarkeit[mitarbeiter[i]] = []
+            for day_availability in availabilities:
+                date, binary_list = day_availability
+                verfügbarkeit[mitarbeiter[i]].append(binary_list)
+        
+        print(verfügbarkeit)
 
         kosten = {ma: 20 for ma in mitarbeiter}  # Kosten pro Stunde
-        max_zeit = {ma: 8 for ma in mitarbeiter}  # Maximale Arbeitszeit pro Tag
-        min_anwesend = [1, 1, 1, 1]  # Mindestanzahl an Mitarbeitern pro Stunde
+        max_zeit = {ma: 5 for ma in mitarbeiter}  # Maximale Arbeitszeit pro Tag
 
-        # Problem
-        solver = pywraplp.Solver.CreateSolver('GLOP')
+        min_anwesend = [1] * 24  # Mindestanzahl an Mitarbeitern pro Stunde
 
-        # Entscheidungsvariablen
+        # Problem 
+        # GLOP = Simplex Verfahren
+        # CBC =  branch-and-bound- und branch-and-cut-Verfahren
+        # SCIP = Framework für die Lösung gemischt-ganzzahliger Programmierungsproblem
+        # GLPK = Vielzahl von Algorithmen, einschließlich des Simplex-Verfahrens und des branch-and-bound-Verfahrens
+        solver = pywraplp.Solver.CreateSolver('SCIP')
+
+
+        # Entscheidungsvariablen ------------------------------------------------------------------------------------------------
         x = {}
         for i in mitarbeiter:
-            for j in range(4):
-               x[i, j] = solver.IntVar(0, 1, 'x[%s, %s]' % (i, j))
+            for j in range(7):  # Für jeden Tag der Woche
+                for k in range(len(verfügbarkeit[i][j])):  # Für jede Stunde des Tages, an dem das Café geöffnet ist
+                    x[i, j, k] = solver.IntVar(0, 1, 'x[%s, %s, %s]' % (i, j, k))
 
+        print(x)
 
-        # Zielfunktion
-        solver.Minimize(solver.Sum([kosten[i] * x[i, j] for i in mitarbeiter for j in range(4)]))
-
-        # Beschränkungen
+        # Zielfunktion ----------------------------------------------------------------------------------------------------------
+        objective = solver.Objective()
         for i in mitarbeiter:
-            solver.Add(solver.Sum([x[i, j] for j in range(4)]) <= max_zeit[i])
-            for j in range(4):
-                solver.Add(x[i, j] <= verfügbarkeit[i][j])
+            for j in range(7):
+                for k in range(len(verfügbarkeit[i][j])):
+                    objective.SetCoefficient(x[i, j, k], kosten[i])
+        objective.SetMinimization()
 
-        for j in range(4):
-            solver.Add(solver.Sum([x[i, j] for i in mitarbeiter]) >= min_anwesend[j])
 
-        # Problem lösen
+        # Beschränkungen --------------------------------------------------------------------------------------------------------
+        for i in mitarbeiter:
+            for j in range(7):
+                for k in range(len(verfügbarkeit[i][j])):
+                    solver.Add(x[i, j, k] <= verfügbarkeit[i][j][k])
+
+        # Mindestanzahl MA zu jeder Stunde an jedem Tag anwesend 
+        for j in range(7):
+            for k in range(len(verfügbarkeit[mitarbeiter[0]][j])):  # Wir nehmen an, dass alle Mitarbeiter die gleichen Öffnungszeiten haben
+                solver.Add(solver.Sum([x[i, j, k] for i in mitarbeiter]) >= min_anwesend[k])
+
+
+
+        # Problem lösen ---------------------------------------------------------------------------------------------------------
         status = solver.Solve()
 
         # Ergebnisse ausgeben
@@ -57,10 +77,12 @@ class ORAlgorithm:
             mitarbeiter_arbeitszeiten = {}
             for i in mitarbeiter:
                 mitarbeiter_arbeitszeiten[i] = []
-                for j in range(4):
-                    mitarbeiter_arbeitszeiten[i].append(int(x[i, j].solution_value()))
+                for j in range(7):
+                    arbeitszeit_pro_tag = []
+                    for k in range(len(verfügbarkeit[i][j])):
+                        arbeitszeit_pro_tag.append(int(x[i, j, k].solution_value()))
+                    mitarbeiter_arbeitszeiten[i].append(arbeitszeit_pro_tag)
             print(mitarbeiter_arbeitszeiten)
         else:
             print('Das Problem konnte nicht optimal gelöst werden.')
-        
 

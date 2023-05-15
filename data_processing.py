@@ -37,8 +37,8 @@ class DataProcessing:
         print(f"Admin mit der User_id: {self.current_user_id} hat den Solve Button gedrückt.")
 
         with app.app_context():
-            start_date = "2023-05-01"
-            end_date = "2023-05-07"
+            start_date = "2023-05-15"
+            end_date = "2023-05-21"
             
             # Hole den company_name des aktuellen Benutzers
             sql = text("""
