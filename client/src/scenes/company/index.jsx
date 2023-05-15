@@ -209,7 +209,7 @@ const Company = () => {
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">
-                Create New User
+                Update
               </Button>
             </Box>
           </form>
@@ -274,7 +274,7 @@ const initialValues = {
   last_name: "",
   email: "",
   employment_level: "",
-  company_name: "",
+  company_name: "company_name",
   access_level: "",
   department: "",
   password: "",
