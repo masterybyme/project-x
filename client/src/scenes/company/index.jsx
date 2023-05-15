@@ -53,15 +53,15 @@ const Company = () => {
             <Box
               display="grid"
               gap="30px"
-              gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+              gridTemplateColumns="repeat(6, minmax(0, 1fr))"
               sx={{
-                "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+                "& > div": { gridColumn: isNonMobile ? undefined : "span 6" },
               }}
             >
-            <Typography color={colors.greenAccent[500]} variant="h4" sx={{
-                gridColumn: "span 2",
+            <Typography color={colors.greenAccent[500]} variant="h6" sx={{
+                gridColumn: "span 1",
                 display: "flex",
-                alignItems: "center",
+                alignItems: "right",
                 height: "100%",
                 }}>
              Firmennamen
@@ -70,19 +70,26 @@ const Company = () => {
                 fullWidth
                 variant="filled"
                 type="text"
-                label="Vorname"
+                label="Company Name"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.first_name}
-                name="first_name"
+                name="company_name"
                 error={!!touched.first_name && !!errors.first_name}
                 helpertext={touched.first_name && errors.first_name}
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 1" }}
               />
-              <Typography color={colors.greenAccent[500]} variant="h4" sx={{
-                gridColumn: "span 2",
-                display: "flex",
+              <Typography color={colors.greenAccent[500]} variant="" sx={{
+                gridColumn: "span 4",
+                display: "grid",
                 alignItems: "center",
+                height: "100%",
+                }}>
+            </Typography>
+              <Typography color={colors.greenAccent[500]} variant="h6" sx={{
+                gridColumn: "span 1",
+                display: "flex",
+                alignItems: "right",
                 height: "100%",
                 }}>
              Weekly Hours
@@ -91,19 +98,26 @@ const Company = () => {
                 fullWidth
                 variant="filled"
                 type="text"
-                label="Nachname"
+                label="Hour"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.last_name}
-                name="last_name"
+                name="weekly_hour"
                 error={!!touched.last_name && !!errors.last_name}
                 helpertext={touched.last_name && errors.last_name}
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 1" }}
               />
-              <Typography color={colors.greenAccent[500]} variant="h4" sx={{
-                gridColumn: "span 2",
-                display: "flex",
+              <Typography color={colors.greenAccent[500]} variant="" sx={{
+                gridColumn: "span 4",
+                display: "grid",
                 alignItems: "center",
+                height: "100%",
+                }}>
+            </Typography>
+              <Typography color={colors.greenAccent[500]} variant="h6" sx={{
+                gridColumn: "span 1",
+                display: "flex",
+                alignItems: "right",
                 height: "100%",
                 }}>
              Shifts
@@ -112,100 +126,122 @@ const Company = () => {
                 fullWidth
                 variant="filled"
                 type="text"
-                label="Email"
+                label="No. of Shifts"
                 onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.email}
-                name="email"
+                name="shift"
                 error={!!touched.email && !!errors.email}
                 helpertext={touched.email && errors.email}
-                sx={{ gridColumn: "span 2" }}
+                sx={{ gridColumn: "span 1" }}
               />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Firmennamen"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.company_name}
-                name="company_name"
-                error={!!touched.company_name && !!errors.company_name}
-                helpertext={touched.company_name && errors.company_name}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Pensum"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.employment_level}
-                name="employment_level"
-                error={!!touched.employment_level && !!errors.employment_level}
-                helpertext={touched.employment_level && errors.employment_level}
-                InputProps={{
-                  endAdornment: <InputAdornment position="end">%</InputAdornment>,
-                }}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Department"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.department}
-                name="department"
-                error={!!touched.department && !!errors.department}
-                helpertext={touched.department && errors.department}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <FormControl fullWidth variant="filled" sx={{ gridColumn: "span 4" }}>
-                <InputLabel id="access_level-label">Access Level</InputLabel>
-                <Select
-                  labelId="access_level-label"
-                  id="access_level"
-                  name="access_level"
-                  value={values.access_level}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  error={!!touched.access_level && !!errors.access_level}
-                  helpertext={touched.access_level && errors.access_level}
+              <Typography color={colors.greenAccent[500]} variant="" sx={{
+                gridColumn: "span 4",
+                display: "grid",
+                alignItems: "center",
+                height: "100%",
+                }}>
+            </Typography>
+            </Box>
+            <></>
+            <></>
+            <h2>Opening Hour</h2>
+            <></>
+            <></>
+            <Box
+              display="grid"
+              gap="30px"
+              gridTemplateColumns="repeat(6, minmax(0, 1fr))"
+              sx={{
+                "& > div": { gridColumn: isNonMobile ? undefined : "span 6" },
+              }}
+            >
+              <Typography color={colors.greenAccent[500]} variant="h6" sx={{
+                gridColumn: "span 1",
+                display: "flex",
+                alignItems: "center",
+                height: "100%",
+                }}>
+             Weekday
+            </Typography>
+            <Typography color={colors.greenAccent[500]} variant="h6" sx={{
+                gridColumn: "span 1",
+                display: "flex",
+                alignItems: "center",
+                height: "100%",
+                }}>
+             Start Time
+            </Typography>
+            <Typography color={colors.greenAccent[500]} variant="h6" sx={{
+                gridColumn: "span 1",
+                display: "flex",
+                alignItems: "center",
+                height: "100%",
+                }}>
+             End Time
+            </Typography>
+            <Typography color={colors.greenAccent[500]} variant="" sx={{
+                gridColumn: "span 3",
+                display: "flex",
+                alignItems: "center",
+                height: "100%",
+                }}>
+            </Typography>
+              {Array.from({ length: 7 }).map((_, rowIndex) => (
+                <>
+                <Typography
+                  key={`number-${rowIndex}`}
+                  color={colors.greenAccent[500]}
+                  variant=""
+                  sx={{
+                    gridColumn: "span 1",
+                    display: "flex",
+                    alignItems: "center",
+                    height: "100%",
+                  }}
                 >
-                  <MenuItem value="admin">Admin</MenuItem>
-                  <MenuItem value="user">User</MenuItem>
-                </Select>
-              </FormControl>
-              <TextField
-                fullWidth
-                variant="filled"
-                type="password"
-                label="Password"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.password}
-                name="password"
-                error={!!touched.password && !!errors.password}
-                helperText={touched.password && errors.password}
-                sx={{ gridColumn: "span 2" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="password"
-                label="Confirm Password"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.confirmPassword}
-                name="confirmPassword"
-                error={!!touched.confirmPassword && !!errors.confirmPassword}
-                helperText={touched.confirmPassword && errors.confirmPassword}
-                sx={{ gridColumn: "span 2" }}
-              />
-              {values.password !== values.confirmPassword && touched.confirmPassword }
+                 {rowIndex + 1}
+                  </Typography>
+                  <TextField
+                    key={`start-time-${rowIndex}`}
+                    fullWidth
+                    variant="filled"
+                    type="time"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values[`start_time_${rowIndex}`]}
+                    name={`start_time_${rowIndex}`}
+                    error={!!touched[`start_time_${rowIndex}`] && !!errors[`start_time_${rowIndex}`]}
+                    helperText={touched[`start_time_${rowIndex}`] && errors[`start_time_${rowIndex}`]}
+                    sx={{ gridColumn: "span 1" }}
+                  />
+                  <TextField
+                    key={`end-time-${rowIndex}`}
+                    fullWidth
+                    variant="filled"
+                    type="time"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values[`end_time_${rowIndex}`]}
+                    name={`end_time_${rowIndex}`}
+                    error={!!touched[`end_time_${rowIndex}`] && !!errors[`end_time_${rowIndex}`]}
+                    helperText={touched[`end_time_${rowIndex}`] && errors[`end_time_${rowIndex}`]}
+                    sx={{ gridColumn: "span 1" }}
+                  />
+                  <Typography
+                    key={`empty-1-${rowIndex}`}
+                    color={colors.greenAccent[500]}
+                    variant=""
+                    sx={{
+                      gridColumn: "span 3",
+                      display: "flex",
+                      alignItems: "center",
+                      height: "100%",
+                    }}
+                  ></Typography>
+                  
+                </>
+              ))}
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">

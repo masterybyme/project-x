@@ -4,6 +4,8 @@ import Topbar from "./scenes/global/Topbar";
 import Sidebar from "./scenes/global/Sidebar";
 import Dashboard from "./scenes/dashboard";
 import Team from "./scenes/team";
+import Update from "./scenes/update";
+import Invite from "./scenes/invite";
 import Invoices from "./scenes/invoices";
 import Contacts from "./scenes/contacts";
 import Company from "./scenes/company";
@@ -64,6 +66,8 @@ function App() {
               <Route path="/geography" element={<Geography />} />
               <Route path="/plan" element={<Plan />} />
               <Route path="/company" element={<Company />} />
+              <Route path="/invite" element={<Invite />} />
+              <Route path="/update" element={<Update />} />
             </Routes>
             <p>{message}</p>
           </main>
