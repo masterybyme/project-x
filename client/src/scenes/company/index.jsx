@@ -8,7 +8,7 @@ import { tokens } from "../../theme";
 import axios from 'axios';
 
 
-const Company = () => {
+const Company = ({ company }) => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
   const [showErrorNotification, setShowErrorNotification] = useState(false);
@@ -17,7 +17,7 @@ const Company = () => {
 
   const handleFormSubmit = (values, { resetForm }) => {
     axios
-      .post('http://localhost:5000/api/registration/admin', values)
+      .post('http://localhost:5000/api/company', values)
       .then((response) => {
         console.log(response.data);
         setShowSuccessNotification(true);
@@ -200,29 +200,29 @@ const Company = () => {
                     height: "100%",
                   }}
                 >
-                 {rowIndex + 1}
+                 {[rowIndex]}
                   </Typography>
                   <TextField
-                    key={`start-time-${rowIndex}`}
+                    key={`day_${rowIndex}_0`}
                     fullWidth
                     variant="filled"
                     type="time"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values[`start_time_${rowIndex}`]}
+                    value={`${rowIndex + 1}0`}
                     name={`start_time_${rowIndex}`}
                     error={!!touched[`start_time_${rowIndex}`] && !!errors[`start_time_${rowIndex}`]}
                     helperText={touched[`start_time_${rowIndex}`] && errors[`start_time_${rowIndex}`]}
                     sx={{ gridColumn: "span 1" }}
                   />
                   <TextField
-                    key={`end-time-${rowIndex}`}
+                    key={`day_${rowIndex}_1`}
                     fullWidth
                     variant="filled"
                     type="time"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values[`end_time_${rowIndex}`]}
+                    value={`${rowIndex + 1}1`}
                     name={`end_time_${rowIndex}`}
                     error={!!touched[`end_time_${rowIndex}`] && !!errors[`end_time_${rowIndex}`]}
                     helperText={touched[`end_time_${rowIndex}`] && errors[`end_time_${rowIndex}`]}
@@ -315,6 +315,8 @@ const initialValues = {
   department: "",
   password: "",
   confirmPassword: "",
+  10:"10"
+  
 };
 
 export default Company;
