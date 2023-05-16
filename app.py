@@ -1005,7 +1005,7 @@ def react_company_data():
                 db.session.commit()
 
 
-   return jsonify(temp_dict)
+    return jsonify(temp_dict)
 
 
 

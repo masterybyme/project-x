@@ -67,6 +67,19 @@ class ORAlgorithm:
             for k in range(len(verfügbarkeit[mitarbeiter[0]][j])):  # Wir nehmen an, dass alle Mitarbeiter die gleichen Öffnungszeiten haben
                 solver.Add(solver.Sum([x[i, j, k] for i in mitarbeiter]) >= min_anwesend[k])
 
+        # Constraint only allows solutions where the max planned summed hour is 25
+        total_hours = {ma: solver.Sum([x[ma, j, k] for j in range(7) for k in range(len(verfügbarkeit[ma][j]))]) for ma in mitarbeiter}
+        for ma in mitarbeiter:
+            solver.Add(total_hours[ma] <= 25)
+
+        # Constraint makes sure that the user works at least 4 hours in a row - doesn't work yet
+        for i in mitarbeiter:
+            for j in range(7):
+                for k in range(len(verfügbarkeit[i][j]) - 4):
+                    # Check if the Mitarbeiter is planned at the current hour and the next 3 hours
+                    is_planned = [x[i, j, k + n] for n in range(4)]
+                    # Add a constraint to ensure at least one of the four hours is planned
+                    solver.Add(solver.Sum(is_planned) >= 0)
 
 
         # Problem lösen ---------------------------------------------------------------------------------------------------------
