@@ -248,81 +248,6 @@ def user():
                            account=account, template_form=user_form)
 
 
-#API routes 
-@app.route('/api/users')
-def get_data():
-    users = User.query.all()
-    user_list = []
-    for user in users:
-        user_dict = {
-            'id': user.id,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'company_name': user.company_name,
-            'email': user.email,
-            'access_level': user.access_level
-        }
-        user_list.append(user_dict)
-    return jsonify(user_list)
-
-
-@app.route('/api/new_user', methods=['POST'])
-def new_user():
-    data = request.json
-    user = User(first_name=data['first_name'],
-                last_name=data['last_name'],
-                email=data['email'],
-                employment_level=data['employment_level'],
-                company_name=data['company_name'],
-                department=data['department'],
-                access_level=data['access_level'])
-    db.session.add(user)
-    db.session.commit()
-    return {'success': True}
-
-#new
-@app.route('/api/registration/admin', methods=['POST'])
-def api_admin_registration():
-    data = request.json
-    creation_date = datetime.datetime.now()
-    last = User.query.order_by(User.id.desc()).first()
-
-    if last is None:
-        new_id = 10000
-    else:
-        new_id = last.id + 1
-
-    last_company_id = User.query.filter_by(company_name=data['company_name']).order_by(User.company_id.desc()).first()
-
-    if last_company_id is None:
-        new_company_id = 1000
-    else:
-        new_company_id = last_company_id.company_id + 1
-
-    data = User(
-        id=new_id,
-        company_id=new_company_id,
-        first_name=data['first_name'],
-        last_name=data['last_name'],
-        employment_level=data['employment_level'],
-        company_name=data['company_name'],
-        department=data['department'],
-        access_level=data['access_level'],
-        email=data['email'],
-        password=generate_password_hash(data['password']),
-        created_by=new_company_id,
-        changed_by=new_company_id,
-        creation_timestamp=creation_date
-    )
-
-    try:
-        db.session.add(data)
-        db.session.commit()
-        return jsonify({'message': 'Registration successful'})
-    
-    except:
-        db.session.rollback()
-        return jsonify({'error': 'Error occurred - Your email might already be in use'})
 
 @app.route('/update', methods=["GET", "POST"])
 @login_required
@@ -898,7 +823,84 @@ if __name__ == '__main__':
 '''
 
 
-#REACT APP
+#REACT APP / API Routes
+
+@app.route('/api/users')
+def get_data():
+    users = User.query.all()
+    user_list = []
+    for user in users:
+        user_dict = {
+            'id': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'company_name': user.company_name,
+            'email': user.email,
+            'access_level': user.access_level
+        }
+        user_list.append(user_dict)
+    return jsonify(user_list)
+
+
+@app.route('/api/new_user', methods=['POST'])
+def new_user():
+    data = request.json
+    user = User(first_name=data['first_name'],
+                last_name=data['last_name'],
+                email=data['email'],
+                employment_level=data['employment_level'],
+                company_name=data['company_name'],
+                department=data['department'],
+                access_level=data['access_level'])
+    db.session.add(user)
+    db.session.commit()
+    return {'success': True}
+
+
+@app.route('/api/registration/admin', methods=['POST'])
+def api_admin_registration():
+    data = request.json
+    creation_date = datetime.datetime.now()
+    last = User.query.order_by(User.id.desc()).first()
+
+    if last is None:
+        new_id = 10000
+    else:
+        new_id = last.id + 1
+
+    last_company_id = User.query.filter_by(company_name=data['company_name']).order_by(User.company_id.desc()).first()
+
+    if last_company_id is None:
+        new_company_id = 1000
+    else:
+        new_company_id = last_company_id.company_id + 1
+
+    data = User(
+        id=new_id,
+        company_id=new_company_id,
+        first_name=data['first_name'],
+        last_name=data['last_name'],
+        employment_level=data['employment_level'],
+        company_name=data['company_name'],
+        department=data['department'],
+        access_level=data['access_level'],
+        email=data['email'],
+        password=generate_password_hash(data['password']),
+        created_by=new_company_id,
+        changed_by=new_company_id,
+        creation_timestamp=creation_date
+    )
+
+    try:
+        db.session.add(data)
+        db.session.commit()
+        return jsonify({'message': 'Registration successful'})
+    
+    except:
+        db.session.rollback()
+        return jsonify({'error': 'Error occurred - Your email might already be in use'})
+
+
 
 @app.route('/api/update', methods=["GET", "POST"])
 @login_required
