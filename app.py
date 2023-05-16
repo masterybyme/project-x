@@ -1013,21 +1013,3 @@ def react_company_data():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
-
-
-@app.route('/api/users')
-def get_data():
-    users = User.query.all()
-    user_list = []
-    for user in users:
-        user_dict = {
-            'id': user.id,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'company_name': user.company_name,
-            'email': user.email,
-            'access_level': user.access_level
-        }
-        user_list.append(user_dict)
-    return jsonify(user_list)
-
