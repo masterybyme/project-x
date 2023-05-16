@@ -13,3 +13,15 @@ Planung immer am stück min. X Stunden
 Doppelte Verfügbarkeit pro Tag als neue Planung ansehen
 Max Arbeitsstunden pro Tag nicht überschreiten
 
+# Constraint only allows solutions where the max planned summed hour is 50
+        constraint_expr = solver.Sum(x[i, j, k] for j in range(7) for k in range(len(verfügbarkeit[i][j])))
+        constraint = solver.Constraint(0, 50)  # Constraint: <= 50
+        constraint.SetCoefficient(constraint_expr, 1) # Sum * Coefficient of 1
+
+        # Constraint makes sure that the user works at least 3 hours in a row
+        for i in mitarbeiter:
+            for j in range(7):
+                for k in range(len(verfügbarkeit[i][j]) - 2):
+                    constraint_expr = solver.Sum(x[i, j, k + n] for n in range(3))
+                    constraint = solver.Constraint(1, solver.infinity())  # Constraint: >= 1 with infinity hours needs to be maxed
+                    constraint.SetCoefficient(constraint_expr, 1)
