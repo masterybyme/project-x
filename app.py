@@ -926,6 +926,86 @@ def react_update():
     return render_template('update.html', data_tag=User.query.all(), account=new_data, template_form=user_form)
 
 
+@app.route('/api/company', methods = ['GET', 'POST'])
+@admin_required
+def react_company_data():
+    opening_hour = OpeningHours.query.all()
+    creation_date = datetime.datetime.now()
+    weekdays = {0:'Monday', 1:'Tuesday', 2:'Wednesday', 3:'Thursday', 4:'Friday', 5:'Saturday', 6:'Sunday'}
+    day_num = 7
+    company_form = CompanyForm(csrf_enabled = False, obj=opening_hour)
+    react_user = User.query.filter_by(email='robin.martin@timetab.ch').first()
+    company_id = current_user.company_id
+    company_name = react_user.company_name
+    company = Company.query.filter_by(company_name=company_name).first()
+
+    if company is None:
+        shift = ''
+        weekly_hour = ''
+    else:
+
+        shift = company.shifts
+        weekly_hour = company.weekly_hours
+   
+
+    temp_dict = {}
+    for i in range(day_num):
+        temp = OpeningHours.query.filter_by(weekday=weekdays[i]).first()
+        if temp is None:
+            pass
+        else:
+            new_i = i + 1
+            temp_dict[str(new_i) + '&0'] = temp.start_time
+            temp_dict[str(new_i) + '&1'] = temp.end_time
+
+    #Save Company Data
+    if request.method == 'POST':
+        OpeningHours.query.filter_by(company_name=current_user.company_name).delete()
+        db.session.commit()
+        company_no = Company.query.order_by(Company.id.desc()).first()
+        if company_no is None:
+            new_company_no = 1
+        else:
+            new_company_no = company_no.id + 1
+
+        company_data = Company(id=new_company_no ,company_name=company_form.company_name.data, weekly_hours=company_form.weekly_hours.data, shifts=company_form.shift.data,
+                                created_by=company_id, changed_by=company_id, creation_timestamp = creation_date)
+        
+        db.session.merge(company_data)
+        db.session.commit()
+
+        for i in range(day_num): 
+            entry1 = request.form.get(f'day_{i}_0')
+            entry2 = request.form.get(f'day_{i}_1')
+            if entry1:
+                last = OpeningHours.query.order_by(OpeningHours.id.desc()).first()
+                if last is None:
+                    new_id = 1
+                else:
+                    new_id = last.id + 1
+                try:
+                    new_entry1 = datetime.datetime.strptime(entry1, '%H:%M:%S').time()
+                except:
+                    new_entry1 = datetime.datetime.strptime(entry1, '%H:%M').time()
+                
+                try:
+                    new_entry2 = datetime.datetime.strptime(entry2, '%H:%M:%S').time()
+                except:
+                    new_entry2 = datetime.datetime.strptime(entry2, '%H:%M').time()
+                    
+                new_weekday = weekdays[i]
+
+
+                opening = OpeningHours(id=new_id, company_name=current_user.company_name, weekday=new_weekday, start_time=new_entry1,
+                                    end_time=new_entry2, created_by=company_id, changed_by=company_id,
+                                    creation_timestamp = creation_date)
+                
+
+                db.session.add(opening)
+                db.session.commit()
+
+
+   return jsonify(temp_dict)
 
 
 
@@ -933,4 +1013,21 @@ def react_update():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
+
+
+@app.route('/api/users')
+def get_data():
+    users = User.query.all()
+    user_list = []
+    for user in users:
+        user_dict = {
+            'id': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'company_name': user.company_name,
+            'email': user.email,
+            'access_level': user.access_level
+        }
+        user_list.append(user_dict)
+    return jsonify(user_list)
 
