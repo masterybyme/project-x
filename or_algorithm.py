@@ -35,7 +35,7 @@ class ORAlgorithm:
         # CBC =  branch-and-bound- und branch-and-cut-Verfahren
         # SCIP = Framework für die Lösung gemischt-ganzzahliger Programmierungsproblem
         # GLPK = Vielzahl von Algorithmen, einschließlich des Simplex-Verfahrens und des branch-and-bound-Verfahrens
-        solver = pywraplp.Solver.CreateSolver('SCIP')
+        solver = pywraplp.Solver.CreateSolver('CBC')
 
 
         # Entscheidungsvariablen ------------------------------------------------------------------------------------------------
@@ -99,3 +99,5 @@ class ORAlgorithm:
         else:
             print('Das Problem konnte nicht optimal gelöst werden.')
 
+
+print("ffddd")
