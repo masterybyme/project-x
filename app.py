@@ -248,81 +248,6 @@ def user():
                            account=account, template_form=user_form)
 
 
-#API routes 
-@app.route('/api/users')
-def get_data():
-    users = User.query.all()
-    user_list = []
-    for user in users:
-        user_dict = {
-            'id': user.id,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'company_name': user.company_name,
-            'email': user.email,
-            'access_level': user.access_level
-        }
-        user_list.append(user_dict)
-    return jsonify(user_list)
-
-
-@app.route('/api/new_user', methods=['POST'])
-def new_user():
-    data = request.json
-    user = User(first_name=data['first_name'],
-                last_name=data['last_name'],
-                email=data['email'],
-                employment_level=data['employment_level'],
-                company_name=data['company_name'],
-                department=data['department'],
-                access_level=data['access_level'])
-    db.session.add(user)
-    db.session.commit()
-    return {'success': True}
-
-#new
-@app.route('/api/registration/admin', methods=['POST'])
-def api_admin_registration():
-    data = request.json
-    creation_date = datetime.datetime.now()
-    last = User.query.order_by(User.id.desc()).first()
-
-    if last is None:
-        new_id = 10000
-    else:
-        new_id = last.id + 1
-
-    last_company_id = User.query.filter_by(company_name=data['company_name']).order_by(User.company_id.desc()).first()
-
-    if last_company_id is None:
-        new_company_id = 1000
-    else:
-        new_company_id = last_company_id.company_id + 1
-
-    data = User(
-        id=new_id,
-        company_id=new_company_id,
-        first_name=data['first_name'],
-        last_name=data['last_name'],
-        employment_level=data['employment_level'],
-        company_name=data['company_name'],
-        department=data['department'],
-        access_level=data['access_level'],
-        email=data['email'],
-        password=generate_password_hash(data['password']),
-        created_by=new_company_id,
-        changed_by=new_company_id,
-        creation_timestamp=creation_date
-    )
-
-    try:
-        db.session.add(data)
-        db.session.commit()
-        return jsonify({'message': 'Registration successful'})
-    
-    except:
-        db.session.rollback()
-        return jsonify({'error': 'Error occurred - Your email might already be in use'})
 
 @app.route('/update', methods=["GET", "POST"])
 @login_required
@@ -898,7 +823,84 @@ if __name__ == '__main__':
 '''
 
 
-#REACT APP
+#REACT APP / API Routes
+
+@app.route('/api/users')
+def get_data():
+    users = User.query.all()
+    user_list = []
+    for user in users:
+        user_dict = {
+            'id': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'company_name': user.company_name,
+            'email': user.email,
+            'access_level': user.access_level
+        }
+        user_list.append(user_dict)
+    return jsonify(user_list)
+
+
+@app.route('/api/new_user', methods=['POST'])
+def new_user():
+    data = request.json
+    user = User(first_name=data['first_name'],
+                last_name=data['last_name'],
+                email=data['email'],
+                employment_level=data['employment_level'],
+                company_name=data['company_name'],
+                department=data['department'],
+                access_level=data['access_level'])
+    db.session.add(user)
+    db.session.commit()
+    return {'success': True}
+
+
+@app.route('/api/registration/admin', methods=['POST'])
+def api_admin_registration():
+    data = request.json
+    creation_date = datetime.datetime.now()
+    last = User.query.order_by(User.id.desc()).first()
+
+    if last is None:
+        new_id = 10000
+    else:
+        new_id = last.id + 1
+
+    last_company_id = User.query.filter_by(company_name=data['company_name']).order_by(User.company_id.desc()).first()
+
+    if last_company_id is None:
+        new_company_id = 1000
+    else:
+        new_company_id = last_company_id.company_id + 1
+
+    data = User(
+        id=new_id,
+        company_id=new_company_id,
+        first_name=data['first_name'],
+        last_name=data['last_name'],
+        employment_level=data['employment_level'],
+        company_name=data['company_name'],
+        department=data['department'],
+        access_level=data['access_level'],
+        email=data['email'],
+        password=generate_password_hash(data['password']),
+        created_by=new_company_id,
+        changed_by=new_company_id,
+        creation_timestamp=creation_date
+    )
+
+    try:
+        db.session.add(data)
+        db.session.commit()
+        return jsonify({'message': 'Registration successful'})
+    
+    except:
+        db.session.rollback()
+        return jsonify({'error': 'Error occurred - Your email might already be in use'})
+
+
 
 @app.route('/api/update', methods=["GET", "POST"])
 @login_required
@@ -1006,8 +1008,178 @@ def react_company_data():
 
 
     return jsonify(temp_dict)
+'''
+@app.route('/api/planning', methods = ['GET', 'POST'])
+@login_required
+def planning():
+    # today's date
+    today = datetime.date.today()
+    creation_date = datetime.datetime.now()
+    monday = today - datetime.timedelta(days=today.weekday())
+    weekdays = {0:'Monday', 1:'Tuesday', 2:'Wednesday', 3:'Thursday', 4:'Friday', 5:'Saturday', 6:'Sunday'}
+    day_num = 7
+    week_adjustment = session.get('week_adjustment', 0)
+
+    user = User.query.get(current_user.id)
+    company_id = current_user.company_id
+    planning_form = PlanningForm(csrf_enabled = False)
+
+    company_dict = {}
+    for company in User.query.filter_by(email=current_user.email).all():
+        company_dict[company.company_name] = company
+       
+    temp_dict = {}
+    for i in range(day_num):
+        temp = Availability.query.filter_by(email=user.email, weekday=weekdays[i]).first()
+        if temp is None:
+            pass
+        else:
+            new_i = i + 1
+            temp_dict[str(new_i) + '&0'] = temp.start_time
+            temp_dict[str(new_i) + '&1'] = temp.end_time
+            temp_dict[str(new_i) + '&2'] = temp.start_time2
+            temp_dict[str(new_i) + '&3'] = temp.end_time2
+            temp_dict[str(new_i) + '&4'] = temp.start_time3
+            temp_dict[str(new_i) + '&5'] = temp.end_time3
 
 
+    if planning_form.prev_week.data:
+        week_adjustment -=7
+        session['week_adjustment'] = week_adjustment
+
+        monday = monday + datetime.timedelta(days=week_adjustment)
+
+        return render_template('planning.html', template_form=planning_form, monday=monday, weekdays=weekdays,
+                               day_num=day_num)
+
+    if planning_form.next_week.data:
+        week_adjustment +=7
+        session['week_adjustment'] = week_adjustment
+
+        monday = monday + datetime.timedelta(days=week_adjustment)
+
+        return render_template('planning.html', template_form=planning_form, monday=monday, weekdays=weekdays,
+                               day_num=day_num, temp_dict=temp_dict)
+
+    #Set Template
+    if planning_form.template1.data:
+        temp_dict = {}
+        for i in range(day_num):
+            temp = TemplateAvailability.query.filter_by(email=user.email, weekday=weekdays[i]).first()
+            if temp is None:
+                pass
+            else:
+                new_i = i + 1
+                temp_dict[str(new_i) + '&0'] = temp.start_time
+                temp_dict[str(new_i) + '&1'] = temp.end_time
+                temp_dict[str(new_i) + '&2'] = temp.start_time2
+                temp_dict[str(new_i) + '&3'] = temp.end_time2
+                temp_dict[str(new_i) + '&4'] = temp.start_time3
+                temp_dict[str(new_i) + '&5'] = temp.end_time3
+
+        return render_template('planning.html', template_form=planning_form, monday=monday, weekdays=weekdays,
+                               day_num=day_num, temp_dict=temp_dict)
+
+
+    #Save Availability
+    if request.method == 'POST' and 'submit' in request.form:
+        for i in range(day_num):
+            new_date = monday + datetime.timedelta(days=i) + datetime.timedelta(days=week_adjustment)
+            Availability.query.filter_by(user_id=current_user.id, date=new_date).delete()
+            db.session.commit()
+
+            entry1 = request.form.get(f'day_{i}_0')
+            entry2 = request.form.get(f'day_{i}_1')
+            entry3 = request.form.get(f'day_{i}_2')
+            entry4 = request.form.get(f'day_{i}_3')
+            entry5 = request.form.get(f'day_{i}_4')
+            entry6 = request.form.get(f'day_{i}_5')
+            if entry1:
+                last = Availability.query.order_by(Availability.id.desc()).first()
+                if last is None:
+                    new_id = 1
+                else:
+                    new_id = last.id + 1
+    
+                try:
+                    new_entry1 = datetime.datetime.strptime(entry1, '%H:%M:%S').time()
+                except:
+                    new_entry1 = datetime.datetime.strptime(entry1, '%H:%M').time()
+                
+                try:
+                    new_entry2 = datetime.datetime.strptime(entry2, '%H:%M:%S').time()
+                except:
+                    new_entry2 = datetime.datetime.strptime(entry2, '%H:%M').time()
+                
+                try:
+                    new_entry3 = datetime.datetime.strptime(entry3, '%H:%M:%S').time()
+                except:
+                    new_entry3 = datetime.datetime.strptime(entry3, '%H:%M').time()
+                
+                try:
+                    new_entry4 = datetime.datetime.strptime(entry4, '%H:%M:%S').time()
+                except:
+                    new_entry4 = datetime.datetime.strptime(entry4, '%H:%M').time()
+               
+                try:
+                    new_entry5 = datetime.datetime.strptime(entry5, '%H:%M:%S').time()
+                except:
+                    new_entry5 = datetime.datetime.strptime(entry5, '%H:%M').time()
+                
+                try:
+                    new_entry6 = datetime.datetime.strptime(entry6, '%H:%M:%S').time()
+                except:
+                    new_entry6 = datetime.datetime.strptime(entry6, '%H:%M').time()
+
+                
+                new_weekday = weekdays[i]
+
+
+                data = Availability(id=new_id, user_id=current_user.id, date=new_date, weekday=new_weekday, email=user.email,
+                                    start_time=new_entry1, end_time=new_entry2, start_time2=new_entry3,
+                                    end_time2=new_entry4, start_time3=new_entry5, end_time3=new_entry6,
+                                    created_by=company_id, changed_by=company_id, creation_timestamp = creation_date)
+
+
+                db.session.add(data)
+                db.session.commit()
+
+    #Save templates
+    if request.method == 'POST' and 'template' in request.form:
+        for i in range(day_num):
+            entry1 = request.form.get(f'day_{i}_0')
+            entry2 = request.form.get(f'day_{i}_1')
+            entry3 = request.form.get(f'day_{i}_2')
+            entry4 = request.form.get(f'day_{i}_3')
+            entry5 = request.form.get(f'day_{i}_4')
+            entry6 = request.form.get(f'day_{i}_5')
+            if entry1:
+                last = TemplateAvailability.query.order_by(TemplateAvailability.id.desc()).first()
+                if last is None:
+                    new_id = 1
+                else:
+                    new_id = last.id + 1
+                new_name = planning_form.template_name.data
+                new_date = monday + datetime.timedelta(days=i)
+                new_entry1 = datetime.datetime.strptime(entry1, '%H:%M').time()
+                new_entry2 = datetime.datetime.strptime(entry2, '%H:%M').time()
+                new_entry3 = datetime.datetime.strptime(entry3, '%H:%M').time()
+                new_entry4 = datetime.datetime.strptime(entry4, '%H:%M').time()
+                new_entry5 = datetime.datetime.strptime(entry5, '%H:%M').time()
+                new_entry6 = datetime.datetime.strptime(entry6, '%H:%M').time()
+                new_weekday = weekdays[i]
+
+                data = TemplateAvailability(id=new_id, template_name=new_name, date=new_date, weekday=new_weekday, email=user.email,
+                                            start_time=new_entry1, end_time=new_entry2, start_time2=new_entry3,
+                                            end_time2=new_entry4, start_time3=new_entry5, end_time3=new_entry6,
+                                            created_by=company_id, changed_by=company_id, creation_timestamp = creation_date)
+
+                db.session.add(data)
+                db.session.commit()
+
+    return render_template('planning.html', template_form=planning_form, monday=monday, weekdays=weekdays,
+                           day_num=day_num, temp_dict=temp_dict, company_dict=company_dict)
+'''
 
 
 
