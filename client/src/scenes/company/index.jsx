@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTheme, Box, Button, TextField, InputAdornment, MenuItem, Select, FormControl, InputLabel, Snackbar, Typography  } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
@@ -13,7 +13,25 @@ const Company = ({ company }) => {
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
   const [showErrorNotification, setShowErrorNotification] = useState(false);
   const theme = useTheme();
+  const [users, setUsers] = useState([]);
+  const [message, setMessage] = useState("");
   const colors = tokens(theme.palette.mode);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  //Datafetch for User-Display in Team.jsx
+  async function fetchData() {
+    try {
+      const response = await axios.get("http://localhost:5000/api/company");
+      const data = response.data;
+      setUsers(data);
+    } catch (error) {
+      console.error("Error fetching data:", error.response ? error.response : error);
+      setMessage("An error occurred while fetching data.");
+    }
+  }
 
   const handleFormSubmit = (values, { resetForm }) => {
     axios
