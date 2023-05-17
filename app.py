@@ -1008,7 +1008,7 @@ def react_company_data():
 
 
     return jsonify(temp_dict)
-
+'''
 @app.route('/api/planning', methods = ['GET', 'POST'])
 @login_required
 def planning():
@@ -1179,7 +1179,7 @@ def planning():
 
     return render_template('planning.html', template_form=planning_form, monday=monday, weekdays=weekdays,
                            day_num=day_num, temp_dict=temp_dict, company_dict=company_dict)
-
+'''
 
 
 
