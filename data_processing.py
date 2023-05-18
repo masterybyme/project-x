@@ -14,6 +14,7 @@ class DataProcessing:
         self.laden_schliesst = None
         self.user_availability = None
         self.binary_availability = None
+        self.time_req = None
 
 
     def run(self):
@@ -25,6 +26,8 @@ class DataProcessing:
         # print(f"Laden öffnet: {self.laden_oeffnet}")
         # print(f"Laden schliesst: {self.laden_schliesst}")
         # print(f"Opening Hours: {self.opening_hours}")
+        self.get_time_req()
+        print(f"Time Req: {self.time_req}")
         self.binaere_liste()
         print(f"Binary Availability: {self.binary_availability}")
 
@@ -37,8 +40,8 @@ class DataProcessing:
         print(f"Admin mit der User_id: {self.current_user_id} hat den Solve Button gedrückt.")
 
         with app.app_context():
-            start_date = "2023-05-15"
-            end_date = "2023-05-21"
+            start_date = "2023-05-22"
+            end_date = "2023-05-28"
             
             # Hole den company_name des aktuellen Benutzers
             sql = text("""
@@ -140,6 +143,48 @@ class DataProcessing:
 
         # Berechne die Öffnungszeiten für jeden Wochentag und speichere sie in einer Liste
         self.opening_hours = [self.time_to_int(self.laden_schliesst[i]) - self.time_to_int(self.laden_oeffnet[i]) for i in range(7)]
+
+
+
+    # Funktioniert noch nicht!
+    def get_time_req(self):
+        """In dieser Funktion werden die benötigten Mitarbeiter für jede Stunde jedes Tages abgerufen."""
+
+        with app.app_context():
+            start_date = "2023-05-22"
+            end_date = "2023-05-28"
+
+            # Hole den company_name des aktuellen Benutzers
+            sql = text("""
+                SELECT company_name
+                FROM user
+                WHERE id = :current_user_id
+            """)
+            result = db.session.execute(sql, {"current_user_id": self.current_user_id})
+            company_name = result.fetchone()[0]
+
+            # Anforderungen für das Unternehmen mit demselben company_name abrufen
+            sql = text("""
+                SELECT t.date, t.start_time, t.worker
+                FROM time_req t
+                WHERE t.company_name = :company_name
+                AND t.date BETWEEN :start_date AND :end_date
+            """)
+            # execute = rohe Mysql Abfrage.
+            result = db.session.execute(sql, {"company_name": company_name, "start_date": start_date, "end_date": end_date})
+
+            # fetchall = alle Zeilen der Datenbank werden abgerufen und in einem Tupel gespeichert
+            time_reqs = result.fetchall()
+
+            # Erstellen eines Dictionaries mit Datum und Stunde als Schlüssel:
+            time_req_dict_2 = defaultdict(dict)
+            for date, start_time, worker in time_reqs:
+                # Wochentag als Index (0 = Montag, 1 = Dienstag, usw.) erhalten
+                weekday_index = date.weekday()
+                start_hour = self.time_to_int_2(start_time) - self.time_to_int_1(self.laden_oeffnet[weekday_index])
+                time_req_dict_2[date][start_hour] = worker
+
+        self.time_req = time_req_dict_2
 
 
 
