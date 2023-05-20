@@ -31,7 +31,12 @@ class ORAlgorithm:
         max_zeit = {ma: 5 for ma in mitarbeiter}  # Maximale Arbeitszeit pro Tag
 
         # Diese Daten werden später noch aus der Datenbank gezogen
-        min_anwesend = [2] * 24  # Mindestanzahl an Mitarbeitern pro Stunde
+        # min_anwesend = [2] * 24  # Mindestanzahl an Mitarbeitern pro Stunde
+        min_anwesend = []
+        for _, values in sorted(self.time_req.items()):
+            min_anwesend.append(list(values.values()))
+        
+        print(min_anwesend)
 
         # Problem 
         # GLOP = Simplex Verfahren
@@ -75,10 +80,10 @@ class ORAlgorithm:
                     solver.Add(x[i, j, k] <= verfügbarkeit[i][j][k])
 
 
-        # Mindestanzahl MA zu jeder Stunde an jedem Tag anwesend 
+                # Mindestanzahl MA zu jeder Stunde an jedem Tag anwesend 
         for j in range(7):
             for k in range(len(verfügbarkeit[mitarbeiter[0]][j])):  # Wir nehmen an, dass alle Mitarbeiter die gleichen Öffnungszeiten haben
-                solver.Add(solver.Sum([x[i, j, k] for i in mitarbeiter]) >= min_anwesend[k])
+                solver.Add(solver.Sum([x[i, j, k] for i in mitarbeiter]) >= min_anwesend[j][k])
 
 
         # Constraint only allows solutions where the max planned summed hour is 25
@@ -94,7 +99,7 @@ class ORAlgorithm:
                     # Check if the Mitarbeiter is planned at the current hour and the next 2 hours
                     is_planned = [x[i, j, k + n] for n in range(3)]
                     # Add a constraint to ensure at least one of the tree hours is planned
-                    solver.Add(solver.Sum(is_planned) >= 3)
+                    solver.Add(solver.Sum(is_planned) >= 0)
 
 
         # Problem lösen ---------------------------------------------------------------------------------------------------------
