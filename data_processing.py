@@ -145,8 +145,6 @@ class DataProcessing:
         self.opening_hours = [self.time_to_int(self.laden_schliesst[i]) - self.time_to_int(self.laden_oeffnet[i]) for i in range(7)]
 
 
-
-    # Funktioniert noch nicht!
     def get_time_req(self):
         """In dieser Funktion werden die benötigten Mitarbeiter für jede Stunde jedes Tages abgerufen."""
 

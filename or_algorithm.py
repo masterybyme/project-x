@@ -31,7 +31,7 @@ class ORAlgorithm:
         max_zeit = {ma: 5 for ma in mitarbeiter}  # Maximale Arbeitszeit pro Tag
 
         # Diese Daten werden später noch aus der Datenbank gezogen
-        min_anwesend = [1] * 24  # Mindestanzahl an Mitarbeitern pro Stunde
+        min_anwesend = [2] * 24  # Mindestanzahl an Mitarbeitern pro Stunde
 
         # Problem 
         # GLOP = Simplex Verfahren

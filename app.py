@@ -570,8 +570,6 @@ def admin():
             else:
                 new_i = i + 1
                 timereq_dict[str(new_i) + str(hour)] = temp.worker
-    
-    print(timereq_dict)
 
 
     #Prev Week
