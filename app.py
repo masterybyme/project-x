@@ -570,8 +570,6 @@ def admin():
             else:
                 new_i = i + 1
                 timereq_dict[str(new_i) + str(hour)] = temp.worker
-    
-    print(timereq_dict)
 
 
     #Prev Week
@@ -624,7 +622,7 @@ def admin():
                         new_id = 1
                     else:
                         new_id = last.id + 1
-                    new_date = monday + datetime.timedelta(days=i)
+                    new_date = monday + datetime.timedelta(days=i) + datetime.timedelta(days=week_adjustment)
                     time_num = hour * 100
                     time = f'{time_num:04d}'
                     new_time = datetime.datetime.strptime(time, '%H%M').time()
