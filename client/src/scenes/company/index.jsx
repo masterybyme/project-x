@@ -28,8 +28,18 @@ const Company = ({ company }) => {
     fetchCompany();
   }, []);
 
-  const handleFormSubmit = (values) => {
-    // Handle form submission
+  const handleFormSubmit = (values, { resetForm }) => {
+    axios
+      .post('http://localhost:5000/api/company', values)
+      .then((response) => {
+        console.log(response.data);
+        setShowSuccessNotification(true);
+        resetForm();
+      })
+      .catch((error) => {
+        console.error(error);
+        setShowErrorNotification(true);
+      });
   };
 
 

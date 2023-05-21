@@ -927,12 +927,13 @@ def react_update():
 
 @app.route('/api/company', methods=['GET', 'POST'])
 def get_company():
+    #This has to be updated to current user once function is implemented
     users = User.query.filter_by(email="robin.martin@timetab.ch").first()
     company_name = Company.query.filter_by(company_name = users.company_name).first()
     company_list = {
             'company_name': users.company_name,
             'shifts': company_name.shifts,
-            'weekly_hours': company_name.weekly_hours
+            'weekly_hours': company_name.weekly_hours,
         }      
     print(company_list)  
     return jsonify(company_list)
