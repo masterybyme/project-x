@@ -251,7 +251,7 @@ const Company = ({ company }) => {
                       height: "100%",
                     }}
                   >
-                    {rowIndex}
+                    {companyData.weekdays[rowIndex] || ""}
                   </Typography>
                   <TextField
                     key={`day_${rowIndex}_0`}
