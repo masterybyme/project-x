@@ -927,7 +927,7 @@ def react_update():
 
 @app.route('/api/company', methods=['GET', 'POST'])
 def get_company():
-    #This has to be updated to current user once function is implemented
+    #This has to be updated to current user once function is implemented.
     users = User.query.filter_by(email="robin.martin@timetab.ch").first()
     company_name = Company.query.filter_by(company_name = users.company_name).first()
     company_list = {
